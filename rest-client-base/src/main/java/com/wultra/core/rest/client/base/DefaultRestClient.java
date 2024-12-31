@@ -1297,6 +1297,16 @@ public class DefaultRestClient implements RestClient {
         }
 
         /**
+         * Set keystore bytes.
+         * @param keyStoreBytes Keystore bytes.
+         * @return Builder.
+         */
+        public CertificateAuthBuilder keyStoreBytes(byte[] keyStoreBytes) {
+            mainBuilder.config.setKeyStoreBytes(keyStoreBytes);
+            return this;
+        }
+
+        /**
          * Set keystore password.
          * @param keyStorePassword Keystore password.
          * @return Builder.
@@ -1342,6 +1352,16 @@ public class DefaultRestClient implements RestClient {
          */
         public CertificateAuthBuilder trustStoreLocation(String trustStoreLocation) {
             mainBuilder.config.setTrustStoreLocation(trustStoreLocation);
+            return this;
+        }
+
+        /**
+         * Set truststore bytes.
+         * @param trustStoreBytes Truststore bytes.
+         * @return Builder.
+         */
+        public CertificateAuthBuilder trustStoreBytes(byte[] trustStoreBytes) {
+            mainBuilder.config.setTrustStoreBytes(trustStoreBytes);
             return this;
         }
 
