@@ -543,6 +543,10 @@ public class RestClientConfiguration {
      * @param keyStoreBytes Byte data with the key store.
      */
     public void setKeyStoreBytes(byte[] keyStoreBytes) {
+        if (keyStoreBytes == null) {
+            this.keyStoreBytes = null;
+            return;
+        }
         this.keyStoreBytes = Arrays.copyOf(keyStoreBytes, keyStoreBytes.length);
     }
 
@@ -643,6 +647,10 @@ public class RestClientConfiguration {
      * @param trustStoreBytes Byte data with the trust store.
      */
     public void setTrustStoreBytes(byte[] trustStoreBytes) {
+        if (trustStoreBytes == null) {
+            this.trustStoreBytes = null;
+            return;
+        }
         this.trustStoreBytes = Arrays.copyOf(trustStoreBytes, trustStoreBytes.length);
     }
 
