@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package io.getlime.core.rest.model.base.response;
+package com.wultra.core.rest.model.base.response;
 
 
 import jakarta.validation.constraints.NotBlank;

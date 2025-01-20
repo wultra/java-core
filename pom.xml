@@ -4,11 +4,11 @@
 
 	<modelVersion>4.0.0</modelVersion>
 
-	<name>lime-java-core-parent</name>
+	<name>wultra-java-core-parent</name>
 	<description>Wultra - Core Java Libraries</description>
-	<groupId>io.getlime.core</groupId>
-	<artifactId>lime-java-core-parent</artifactId>
-	<version>1.12.0-SNAPSHOT</version>
+	<groupId>com.wultra.core</groupId>
+	<artifactId>wultra-java-core-parent</artifactId>
+	<version>2.0.0-SNAPSHOT</version>
 	<packaging>pom</packaging>
 
 	<inceptionYear>2017</inceptionYear>
@@ -27,9 +27,9 @@
 	</licenses>
 
 	<scm>
-		<connection>scm:git:https://github.com/wultra/lime-java-core.git</connection>
-		<developerConnection>scm:git:https://github.com/wultra/lime-java-core.git</developerConnection>
-		<url>https://github.com/wultra/lime-java-core</url>
+		<connection>scm:git:https://github.com/wultra/java-core.git</connection>
+		<developerConnection>scm:git:https://github.com/wultra/java-core.git</developerConnection>
+		<url>https://github.com/wultra/java-core</url>
 	</scm>
 
 	<developers>
