@@ -15,7 +15,7 @@
  */
 package com.wultra.core.rest.client.base.controller;
 
-import io.getlime.core.rest.model.base.response.Response;
+import com.wultra.core.rest.model.base.response.Response;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;

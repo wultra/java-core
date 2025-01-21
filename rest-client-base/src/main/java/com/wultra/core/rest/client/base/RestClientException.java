@@ -15,7 +15,7 @@
  */
 package com.wultra.core.rest.client.base;
 
-import io.getlime.core.rest.model.base.response.ErrorResponse;
+import com.wultra.core.rest.model.base.response.ErrorResponse;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatusCode;
 

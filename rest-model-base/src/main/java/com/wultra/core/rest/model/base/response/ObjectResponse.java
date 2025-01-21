@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package io.getlime.core.rest.model.base.response;
+package com.wultra.core.rest.model.base.response;
 
 
 import jakarta.validation.Valid;
@@ -56,7 +56,7 @@ public class ObjectResponse<T> extends Response {
     /**
      * Constructor with response status and response object
      *
-     * @param status         Response status, use static constant from {@link io.getlime.core.rest.model.base.response.Response.Status} class.
+     * @param status         Response status, use static constant from {@link com.wultra.core.rest.model.base.response.Response.Status} class.
      * @param responseObject Response object.
      */
     public ObjectResponse(String status, T responseObject) {
