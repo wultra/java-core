@@ -61,6 +61,7 @@
 
 		<!-- Dependencies -->
 		<spring-boot.version>3.2.3</spring-boot.version>
+		<shedlock.version>6.6.0</shedlock.version>
 		<findbugs-annotations.version>3.0.1</findbugs-annotations.version>
 	</properties>
 

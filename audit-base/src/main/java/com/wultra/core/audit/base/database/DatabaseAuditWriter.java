@@ -23,6 +23,7 @@ import com.wultra.core.audit.base.util.ClassUtil;
 import com.wultra.core.audit.base.util.JsonUtil;
 import com.wultra.core.audit.base.util.StringUtil;
 import jakarta.annotation.PreDestroy;
+import net.javacrumbs.shedlock.spring.annotation.SchedulerLock;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -59,6 +60,8 @@ public class DatabaseAuditWriter implements AuditWriter {
     private static final Logger logger = LoggerFactory.getLogger(DatabaseAuditWriter.class);
 
     private static final String SPRING_FRAMEWORK_PACKAGE_PREFIX = "org.springframework";
+    private static final String JDK_INTERNAL_REFLECT_PACKAGE_PREFIX = "jdk.internal.reflect";
+    private static final String JAVA_LANG_REFLECT_PACKAGE_PREFIX = "java.lang.reflect";
 
     private final BlockingQueue<AuditRecord> queue;
     private final JdbcTemplate jdbcTemplate;
@@ -132,9 +135,11 @@ public class DatabaseAuditWriter implements AuditWriter {
 
     @Override
     public void write(AuditRecord auditRecord) {
-        List<String> packageFilter = new ArrayList<>();
-        packageFilter.add(this.getClass().getPackage().getName());
-        packageFilter.add(SPRING_FRAMEWORK_PACKAGE_PREFIX);
+        final List<String> packageFilter = List.of(
+                this.getClass().getPackage().getName(),
+                SPRING_FRAMEWORK_PACKAGE_PREFIX,
+                JDK_INTERNAL_REFLECT_PACKAGE_PREFIX,
+                JAVA_LANG_REFLECT_PACKAGE_PREFIX);
         auditRecord.setCallingClass(ClassUtil.getCallingClass(packageFilter));
         auditRecord.setThreadName(Thread.currentThread().getName());
         try {
@@ -284,6 +289,7 @@ public class DatabaseAuditWriter implements AuditWriter {
      * Scheduled cleanup of audit data in the database.
      */
     @Scheduled(cron = "${audit.cleanup.cron:0 59 23 * * SAT}")
+    @SchedulerLock(name = "audit.cleanup")
     public void scheduledCleanup() {
         logger.info("action: scheduledCleanup, state: initiated");
         cleanup();
