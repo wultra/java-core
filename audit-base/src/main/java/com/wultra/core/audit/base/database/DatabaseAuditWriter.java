@@ -281,12 +281,13 @@ public class DatabaseAuditWriter implements AuditWriter {
     }
 
     /**
-     * Scheduled cleanup of audit data in database.
+     * Scheduled cleanup of audit data in the database.
      */
-    @Scheduled(fixedDelayString = "${audit.cleanup.delay.fixed:3600000}", initialDelayString = "${powerauth.audit.cleanup.delay.initial:1000}")
+    @Scheduled(cron = "${audit.cleanup.cron:0 59 23 * * SAT}")
     public void scheduledCleanup() {
-        logger.debug("Scheduled audit log cleanup called");
+        logger.info("action: scheduledCleanup, state: initiated");
         cleanup();
+        logger.info("action: scheduledCleanup, state: succeeded");
     }
 
     /**

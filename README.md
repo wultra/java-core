@@ -318,7 +318,8 @@ The following properties can be configured in case the default configuration nee
 - `audit.db.table.log.name` - name of audit log database table (default: `audit_log`)
 - `audit.db.table.param.name` - name of audit parameters database table (default: `audit_param`)
 - `audit.db.table.param.enabled` - flag if logging params to parameters database is enabled (default: `false`)
-- `audit.db.batch.size` - database batch size (default: `1000`)  
+- `audit.db.batch.size` - database batch size (default: `1000`)
+- `audit.cleanup.cron` - A cron expression for the cleanup job. (default: `0 59 23 * * SAT`, use `-` to turn it off completely) 
 
 You can configure database schema used by the auditing library using regular Spring JPA/Hibernate property in your application:
 - `spring.jpa.properties.hibernate.default_schema` - database database schema (default: none)
