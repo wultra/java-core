@@ -23,6 +23,7 @@ import com.wultra.core.audit.base.util.ClassUtil;
 import com.wultra.core.audit.base.util.JsonUtil;
 import com.wultra.core.audit.base.util.StringUtil;
 import jakarta.annotation.PreDestroy;
+import net.javacrumbs.shedlock.core.LockAssert;
 import net.javacrumbs.shedlock.spring.annotation.SchedulerLock;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -292,6 +293,7 @@ public class DatabaseAuditWriter implements AuditWriter {
     @SchedulerLock(name = "audit.cleanup", lockAtLeastFor = "1s", lockAtMostFor = "10m")
     public void scheduledCleanup() {
         logger.info("action: scheduledCleanup, state: initiated");
+        LockAssert.assertLocked();
         cleanup();
         logger.info("action: scheduledCleanup, state: succeeded");
     }
