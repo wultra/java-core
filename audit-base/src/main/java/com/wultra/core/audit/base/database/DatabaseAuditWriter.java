@@ -289,7 +289,7 @@ public class DatabaseAuditWriter implements AuditWriter {
     /**
      * Scheduled cleanup of audit data in the database.
      */
-    @Scheduled(cron = "${audit.cleanup.cron:0 0 0/1 * * *}")
+    @Scheduled(cron = "${audit.cleanup.cron:0 0 * * * *}")
     @SchedulerLock(name = "audit.cleanup", lockAtLeastFor = "${audit.cleanup.lockAtLeastFor:5s}", lockAtMostFor = "${audit.cleanup.lockAtMostFor:30m}")
     public void scheduledCleanup() {
         logger.info("action: scheduledCleanup, state: initiated");

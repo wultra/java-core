@@ -322,7 +322,7 @@ The following properties can be configured in case the default configuration nee
 - `audit.db.table.param.name` - name of audit parameters database table (default: `audit_param`)
 - `audit.db.table.param.enabled` - flag if logging params to parameters database is enabled (default: `false`)
 - `audit.db.batch.size` - database batch size (default: `1000`)
-- `audit.cleanup.cron` - A cron expression for the cleanup job. (default: `0 0 0/1 * * *`, use `-` to turn it off completely) 
+- `audit.cleanup.cron` - A cron expression for the cleanup job. (default: `0 0 * * * *`, use `-` to turn it off completely) 
 - `audit.cleanup.lockAtLeastFor` - The lock will be held at least for given duration. (default: `5s`)
 - `audit.cleanup.lockAtMostFor` - The lock will be held at most for given duration. (default: `30m`)
 
