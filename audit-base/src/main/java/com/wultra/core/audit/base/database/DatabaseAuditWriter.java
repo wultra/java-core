@@ -294,6 +294,7 @@ public class DatabaseAuditWriter implements AuditWriter {
     public void scheduledCleanup() {
         logger.info("action: scheduledCleanup, state: initiated");
         LockAssert.assertLocked();
+        logger.info("action: scheduledCleanup, state: lockAsserted");
         cleanup();
         logger.info("action: scheduledCleanup, state: succeeded");
     }
