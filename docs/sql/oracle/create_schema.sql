@@ -38,3 +38,6 @@ CREATE INDEX audit_param_log ON audit_param (audit_log_id);
 CREATE INDEX audit_param_timestamp ON audit_param (timestamp_created);
 CREATE INDEX audit_param_key ON audit_param (param_key);
 CREATE INDEX audit_param_value ON audit_param (param_value);
+
+-- Shedlock
+CREATE TABLE shedlock(name VARCHAR(64) NOT NULL, lock_until TIMESTAMP(3) NOT NULL, locked_at TIMESTAMP(3) NOT NULL, locked_by VARCHAR(255) NOT NULL, PRIMARY KEY (name));
