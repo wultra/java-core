@@ -298,7 +298,10 @@ Date: Fri, 25 Nov 2022 06:35:06 GMT
 
 The `audit-base` project provides auditing functionality for easier investigation of issues. Audit records are stored in a database and can be easily queried. The auditing library also handles removal of old audit records.
 
-The audit library requires one database table `audit_log` and optionally the second table `audit_params` for logging detail parameters. The DDL is available for the following databases:
+The audit library requires one database table `audit_log` and optionally the second table `audit_params` for logging detail parameters.
+Also the `shedlock` table is required for locking scheduled tasks.
+
+The DDL is available for the following databases:
 - [DDL for MySQL](./docs/sql/mysql/create_schema.sql)
 - [DDL for Oracle](./docs/sql/oracle/create_schema.sql)
 - [DDL for PostgreSQL](./docs/sql/postgresql/create_schema.sql)
@@ -306,7 +309,7 @@ The audit library requires one database table `audit_log` and optionally the sec
 ### Configuration
 
 The following configuration is required for integration of the auditing library:
-- Enable scheduling on the application using `@EnableScheduling` annotation on class annotated with `@SpringBootApplication` so that the `flush` and `cleanup` functionality can be scheduled.
+- Enable scheduling on the application using `@EnableScheduling` annotation on class annotated with `@SpringBootApplication` so that the `flush` and `cleanup` functionality can be scheduled. In order to enable schedule locking use `@EnableSchedulerLock` annotation and configure the `LockProvider` bean, see [ShedLock documentation](https://github.com/lukas-krecan/ShedLock) for details.
 - Add the `com.wultra.core.audit.base` package to the `@ComponentScan`, e.g. `@ComponentScan(basePackages = {"...", "com.wultra.core.audit.base"})`, so that the annotations used in auditing library can be discovered.
 - Configure the `spring.application.name` property to enable storing application name with audit records.
 
@@ -318,7 +321,10 @@ The following properties can be configured in case the default configuration nee
 - `audit.db.table.log.name` - name of audit log database table (default: `audit_log`)
 - `audit.db.table.param.name` - name of audit parameters database table (default: `audit_param`)
 - `audit.db.table.param.enabled` - flag if logging params to parameters database is enabled (default: `false`)
-- `audit.db.batch.size` - database batch size (default: `1000`)  
+- `audit.db.batch.size` - database batch size (default: `1000`)
+- `audit.cleanup.cron` - A cron expression for the cleanup job. (default: `0 0 * * * *`, use `-` to turn it off completely) 
+- `audit.cleanup.lockAtLeastFor` - The lock will be held at least for given duration. (default: `5s`)
+- `audit.cleanup.lockAtMostFor` - The lock will be held at most for given duration. (default: `30m`)
 
 You can configure database schema used by the auditing library using regular Spring JPA/Hibernate property in your application:
 - `spring.jpa.properties.hibernate.default_schema` - database database schema (default: none)

@@ -62,6 +62,7 @@
 
 		<!-- Dependencies -->
 		<spring-boot.version>3.3.4</spring-boot.version>
+		<shedlock.version>6.6.0</shedlock.version>
 	</properties>
 
 	<dependencyManagement>

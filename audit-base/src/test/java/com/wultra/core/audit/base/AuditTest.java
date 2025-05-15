@@ -32,7 +32,7 @@ import java.time.Duration;
 import static org.junit.jupiter.api.Assertions.*;
 
 @SpringBootTest(classes = TestApplication.class, properties = {"audit.db.table.param.enabled=false"})
-@Sql(scripts = "/db_schema.sql")
+@Sql("/db_schema.sql")
 class AuditTest {
 
     private final AuditFactory auditFactory;
@@ -45,7 +45,7 @@ class AuditTest {
     }
 
     @BeforeEach
-    public void cleanTestDb() {
+    void cleanTestDb() {
         jdbcTemplate.execute("DELETE FROM audit_log");
         jdbcTemplate.execute("DELETE FROM audit_param");
     }
