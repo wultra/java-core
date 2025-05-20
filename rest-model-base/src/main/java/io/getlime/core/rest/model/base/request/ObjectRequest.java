@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.wultra.core.rest.model.base.request;
+package io.getlime.core.rest.model.base.request;
 
 
 import jakarta.validation.Valid;

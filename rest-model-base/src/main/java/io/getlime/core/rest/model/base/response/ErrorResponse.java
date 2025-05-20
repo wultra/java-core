@@ -13,9 +13,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.wultra.core.rest.model.base.response;
+package io.getlime.core.rest.model.base.response;
 
-import com.wultra.core.rest.model.base.entity.Error;
+import io.getlime.core.rest.model.base.entity.Error;
 
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;

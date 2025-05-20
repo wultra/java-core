@@ -16,7 +16,7 @@
 package com.wultra.core.rest.client.base.errorhandling;
 
 import com.wultra.core.rest.client.base.model.error.RestException;
-import com.wultra.core.rest.model.base.response.ErrorResponse;
+import io.getlime.core.rest.model.base.response.ErrorResponse;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
