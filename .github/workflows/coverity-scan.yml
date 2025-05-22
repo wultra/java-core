@@ -11,6 +11,7 @@ jobs:
     uses: wultra/wultra-infrastructure/.github/workflows/coverity-scan.yml@develop
     secrets: inherit
     with:
-      project-name: ${{ github.event.repository.name }}
+      # for the legacy reason, the project name contains 'lime' at https://scan.coverity.com/projects/wultra-lime-java-core
+      project-name: lime-java-core
       version: ${{ github.sha }}
       description: ${{ github.ref }}
