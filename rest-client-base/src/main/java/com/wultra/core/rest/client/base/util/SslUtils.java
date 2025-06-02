@@ -145,6 +145,7 @@ public class SslUtils {
                                     return trustStore.isCertificateEntry(t);
                                 } catch (KeyStoreException ex) {
                                     keyStoreExceptions.add(ex);
+                                    logger.error("Failed to check if certificate is in truststore: {}", t, ex);
                                     return false;
                                 }
                             })
@@ -152,12 +153,14 @@ public class SslUtils {
                                 try {
                                     return (X509Certificate) trustStore.getCertificate(t);
                                 } catch (KeyStoreException ex) {
+                                    logger.error("Failed to load certificate from truststore: {}", t, ex);
                                     keyStoreExceptions.add(ex);
                                     return null;
                                 }
                             }).toArray(X509Certificate[]::new);
                     if (!keyStoreExceptions.isEmpty()) {
-                        throw new RestClientException("Invalid truststore data provided: " + keyStoreExceptions);
+                        // add at least the first exception as the root cause
+                        throw new RestClientException("Invalid truststore data provided: " + keyStoreExceptions, keyStoreExceptions.get(0));
                     }
                     sslContextBuilder.trustManager(certificates);
                 }
@@ -165,7 +168,7 @@ public class SslUtils {
                 return sslContextBuilder.build();
             }
         } catch (IOException | GeneralSecurityException ex) {
-            throw new RestClientException("SSL configuration failed, error: " + ex.getMessage());
+            throw new RestClientException("SSL configuration failed, error: " + ex.getMessage(), ex);
         }
         return null;
     }
