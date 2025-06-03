@@ -167,7 +167,8 @@ public class SslUtils {
 
                 return sslContextBuilder.build();
             }
-        } catch (IOException | GeneralSecurityException ex) {
+        } catch (IOException | GeneralSecurityException ex) { // NOSONAR -  Both logging and rethrowing are intended as library users might not properly log this security exception
+            logger.error("SSL configuration failed: {}", ex.getMessage(), ex);
             throw new RestClientException("SSL configuration failed, error: " + ex.getMessage(), ex);
         }
         return null;
