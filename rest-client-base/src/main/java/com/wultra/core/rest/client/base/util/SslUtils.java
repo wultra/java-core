@@ -145,6 +145,7 @@ public class SslUtils {
                                     return trustStore.isCertificateEntry(t);
                                 } catch (KeyStoreException ex) {
                                     keyStoreExceptions.add(ex);
+                                    logger.error("Failed to check if certificate is in truststore: {}", t, ex);
                                     return false;
                                 }
                             })
@@ -152,20 +153,23 @@ public class SslUtils {
                                 try {
                                     return (X509Certificate) trustStore.getCertificate(t);
                                 } catch (KeyStoreException ex) {
+                                    logger.error("Failed to load certificate from truststore: {}", t, ex);
                                     keyStoreExceptions.add(ex);
                                     return null;
                                 }
                             }).toArray(X509Certificate[]::new);
                     if (!keyStoreExceptions.isEmpty()) {
-                        throw new RestClientException("Invalid truststore data provided: " + keyStoreExceptions);
+                        // add at least the first exception as the root cause
+                        throw new RestClientException("Invalid truststore data provided: " + keyStoreExceptions, keyStoreExceptions.get(0));
                     }
                     sslContextBuilder.trustManager(certificates);
                 }
 
                 return sslContextBuilder.build();
             }
-        } catch (IOException | GeneralSecurityException ex) {
-            throw new RestClientException("SSL configuration failed, error: " + ex.getMessage());
+        } catch (IOException | GeneralSecurityException ex) { // NOSONAR -  Both logging and rethrowing are intended as library users might not properly log this security exception
+            logger.error("SSL configuration failed: {}", ex.getMessage(), ex);
+            throw new RestClientException("SSL configuration failed, error: " + ex.getMessage(), ex);
         }
         return null;
     }
