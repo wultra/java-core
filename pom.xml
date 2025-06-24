@@ -61,7 +61,7 @@
 		<maven-enforcer-plugin.version>3.5.0</maven-enforcer-plugin.version>
 
 		<!-- Dependencies -->
-		<spring-boot.version>3.5.0</spring-boot.version>
+		<spring-boot.version>3.5.3</spring-boot.version>
 		<shedlock.version>6.9.0</shedlock.version>
 	</properties>
 
