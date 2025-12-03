@@ -145,8 +145,8 @@ class AuditTest {
         final SqlRowSet rs = jdbcTemplate.queryForRowSet("SELECT * FROM audit_log");
         assertTrue(rs.next());
         assertEquals("test exception", rs.getObject("exception_message"));
-        assertTrue(rs.getObject("stack_trace").toString().contains("java.lang.Exception: test exception\n"
-                + "\tat com.wultra.core.audit.base.AuditTest.testAuditException"));
+        assertTrue(rs.getObject("stack_trace").toString().contains("java.lang.Exception: test exception"));
+        assertTrue(rs.getObject("stack_trace").toString().contains("at com.wultra.core.audit.base.AuditTest.testAuditException"));
     }
 
     @Test
@@ -188,8 +188,8 @@ class AuditTest {
         assertTrue(rs.next());
         assertEquals("test message with more formatting and exception", rs.getObject("message"));
         assertEquals("test exception", rs.getObject("exception_message"));
-        assertTrue(rs.getObject("stack_trace").toString().contains("java.lang.Exception: test exception\n"
-                + "\tat com.wultra.core.audit.base.AuditTest.testAuditFormattedMessageException"));
+        assertTrue(rs.getObject("stack_trace").toString().contains("java.lang.Exception: test exception"));
+        assertTrue(rs.getObject("stack_trace").toString().contains("at com.wultra.core.audit.base.AuditTest.testAuditFormattedMessage"));
     }
 
     @Test

@@ -98,7 +98,7 @@ public class AuditConfiguration {
      */
     public Instant getBuildTime() {
         if (buildProperties == null) {
-            return null;
+            return Instant.now();
         }
         return buildProperties.getTime();
     }
