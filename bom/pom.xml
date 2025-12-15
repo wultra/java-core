@@ -11,6 +11,7 @@
     </parent>
 
     <artifactId>core-bom</artifactId>
+    <name>wultra-core-bom</name>
     <description>Bill of Materials for Wultra Core</description>
     <packaging>pom</packaging>
 
