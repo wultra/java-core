@@ -11,6 +11,7 @@
     </parent>
 
     <artifactId>http-common</artifactId>
+    <name>wultra-core-http</name>
     <description>Common HTTP functionality</description>
 
     <dependencies>
