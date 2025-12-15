@@ -11,6 +11,7 @@
     </parent>
 
     <artifactId>annotations</artifactId>
+    <name>wultra-core-annotations</name>
     <description>Common annotations</description>
 
 </project>
