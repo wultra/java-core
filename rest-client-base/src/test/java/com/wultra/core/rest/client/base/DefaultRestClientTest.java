@@ -156,6 +156,61 @@ class DefaultRestClientTest {
     }
 
     @Test
+    void testGet_causeMessage() throws Exception {
+        final DefaultRestClient localRestClient = new DefaultRestClient("http://nonexistent.invalid");
+        final RestClientException exception = assertThrows(RestClientException.class, () ->
+                localRestClient.get("/", new ParameterizedTypeReference<>() {}));
+
+        assertTrue(
+                exception.getMessage().startsWith("HTTP GET request failed; Failed to resolve 'nonexistent.invalid'"),
+                () -> "Unexpected message: " + exception.getMessage());
+    }
+
+    @Test
+    void testHead_causeMessage() throws Exception {
+        final DefaultRestClient localRestClient = new DefaultRestClient("http://nonexistent.invalid");
+        final RestClientException exception = assertThrows(RestClientException.class, () ->
+                localRestClient.head("/", new ParameterizedTypeReference<>() {}));
+
+        assertTrue(
+                exception.getMessage().startsWith("HTTP HEAD request failed; Failed to resolve 'nonexistent.invalid'"),
+                () -> "Unexpected message: " + exception.getMessage());
+    }
+
+    @Test
+    void testDelete_causeMessage() throws Exception {
+        final DefaultRestClient localRestClient = new DefaultRestClient("http://nonexistent.invalid");
+        final RestClientException exception = assertThrows(RestClientException.class, () ->
+                localRestClient.delete("/", new ParameterizedTypeReference<>() {}));
+
+        assertTrue(
+                exception.getMessage().startsWith("HTTP DELETE request failed; Failed to resolve 'nonexistent.invalid'"),
+                () -> "Unexpected message: " + exception.getMessage());
+    }
+
+    @Test
+    void testPut_causeMessage() throws Exception {
+        final DefaultRestClient localRestClient = new DefaultRestClient("http://nonexistent.invalid");
+        final RestClientException exception = assertThrows(RestClientException.class, () ->
+                localRestClient.put("/", null, new ParameterizedTypeReference<>() {}));
+
+        assertTrue(
+                exception.getMessage().startsWith("HTTP PUT request failed; Failed to resolve 'nonexistent.invalid'"),
+                () -> "Unexpected message: " + exception.getMessage());
+    }
+
+    @Test
+    void testPost_causeMessage() throws Exception {
+        final DefaultRestClient localRestClient = new DefaultRestClient("http://nonexistent.invalid");
+        final RestClientException exception = assertThrows(RestClientException.class, () ->
+                localRestClient.post("/", null, new ParameterizedTypeReference<>() {}));
+
+        assertTrue(
+                exception.getMessage().startsWith("HTTP POST request failed; Failed to resolve 'nonexistent.invalid'"),
+                () -> "Unexpected message: " + exception.getMessage());
+    }
+
+    @Test
     void testGetWithObjectResponseObject() throws RestClientException {
         ObjectResponse<TestResponse> response = restClient.getObject("/object-response", TestResponse.class);
         assertNotNull(response.getResponseObject());
@@ -404,16 +459,16 @@ class DefaultRestClientTest {
 
     @Test
     void testPostWithErrorResponseObject() {
-        try {
-            restClient.postObject("/error-response", null, TestResponse.class);
-        } catch (RestClientException ex) {
-            assertEquals(400, ex.getStatusCode().value());
-            assertEquals("{\"status\":\"ERROR\",\"responseObject\":{\"code\":\"TEST_CODE\",\"message\":\"Test message\"}}", ex.getResponse());
-            assertNotNull(ex.getErrorResponse());
-            assertEquals("ERROR", ex.getErrorResponse().getStatus());
-            assertEquals("TEST_CODE", ex.getErrorResponse().getResponseObject().getCode());
-            assertEquals("Test message", ex.getErrorResponse().getResponseObject().getMessage());
-        }
+        final RestClientException ex = assertThrows(RestClientException.class, () ->
+                restClient.postObject("/error-response", null, TestResponse.class));
+
+        assertEquals("HTTP error occurred: 400 BAD_REQUEST", ex.getMessage());
+        assertEquals(400, ex.getStatusCode().value());
+        assertEquals("{\"status\":\"ERROR\",\"responseObject\":{\"code\":\"TEST_CODE\",\"message\":\"Test message\"}}", ex.getResponse());
+        assertNotNull(ex.getErrorResponse());
+        assertEquals("ERROR", ex.getErrorResponse().getStatus());
+        assertEquals("TEST_CODE", ex.getErrorResponse().getResponseObject().getCode());
+        assertEquals("Test message", ex.getErrorResponse().getResponseObject().getMessage());
     }
 
     @Test
