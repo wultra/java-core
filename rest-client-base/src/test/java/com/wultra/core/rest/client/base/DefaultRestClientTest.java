@@ -162,7 +162,7 @@ class DefaultRestClientTest {
                 localRestClient.get("/", new ParameterizedTypeReference<>() {}));
 
         assertTrue(
-                exception.getMessage().startsWith("HTTP GET request failed; Failed to resolve 'nonexistent.invalid'"),
+                exception.getMessage().startsWith("HTTP GET request failed, reason: Failed to resolve 'nonexistent.invalid'"),
                 () -> "Unexpected message: " + exception.getMessage());
     }
 
@@ -173,7 +173,7 @@ class DefaultRestClientTest {
                 localRestClient.head("/", new ParameterizedTypeReference<>() {}));
 
         assertTrue(
-                exception.getMessage().startsWith("HTTP HEAD request failed; Failed to resolve 'nonexistent.invalid'"),
+                exception.getMessage().startsWith("HTTP HEAD request failed, reason: Failed to resolve 'nonexistent.invalid'"),
                 () -> "Unexpected message: " + exception.getMessage());
     }
 
@@ -184,7 +184,7 @@ class DefaultRestClientTest {
                 localRestClient.delete("/", new ParameterizedTypeReference<>() {}));
 
         assertTrue(
-                exception.getMessage().startsWith("HTTP DELETE request failed; Failed to resolve 'nonexistent.invalid'"),
+                exception.getMessage().startsWith("HTTP DELETE request failed, reason: Failed to resolve 'nonexistent.invalid'"),
                 () -> "Unexpected message: " + exception.getMessage());
     }
 
@@ -195,7 +195,7 @@ class DefaultRestClientTest {
                 localRestClient.put("/", null, new ParameterizedTypeReference<>() {}));
 
         assertTrue(
-                exception.getMessage().startsWith("HTTP PUT request failed; Failed to resolve 'nonexistent.invalid'"),
+                exception.getMessage().startsWith("HTTP PUT request failed, reason: Failed to resolve 'nonexistent.invalid'"),
                 () -> "Unexpected message: " + exception.getMessage());
     }
 
@@ -206,7 +206,7 @@ class DefaultRestClientTest {
                 localRestClient.post("/", null, new ParameterizedTypeReference<>() {}));
 
         assertTrue(
-                exception.getMessage().startsWith("HTTP POST request failed; Failed to resolve 'nonexistent.invalid'"),
+                exception.getMessage().startsWith("HTTP POST request failed, reason: Failed to resolve 'nonexistent.invalid'"),
                 () -> "Unexpected message: " + exception.getMessage());
     }
 
