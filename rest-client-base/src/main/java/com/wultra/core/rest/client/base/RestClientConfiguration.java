@@ -51,10 +51,10 @@ public class RestClientConfiguration {
 
     // HTTP connection timeout
     private Duration connectionTimeout = Duration.ofMillis(5000);
-    private Duration responseTimeout;
+    private Duration responseTimeout = Duration.ofSeconds(60);
 
-    private Duration maxIdleTime;
-    private Duration maxLifeTime;
+    private Duration maxIdleTime = Duration.ofSeconds(200);
+    private Duration maxLifeTime = Duration.ofHours(1);
 
     private boolean keepAliveEnabled;
     private Duration keepAliveIdle;
