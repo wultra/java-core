@@ -314,7 +314,7 @@ public class DefaultRestClient implements RestClient {
                 // Throw exceptions created by REST client
                 throw (RestClientException) ex.getCause();
             }
-            throw new RestClientException("HTTP GET request failed", ex);
+            throw new RestClientException("HTTP GET request failed, reason: " + ex.getMessage(), ex);
         }
     }
 
@@ -336,7 +336,7 @@ public class DefaultRestClient implements RestClient {
                     .exchangeToMono(rs -> handleResponse(rs, responseType))
                     .subscribe(onSuccess, onError);
         } catch (Exception ex) {
-            throw new RestClientException("HTTP GET request failed", ex);
+            throw new RestClientException("HTTP GET request failed, reason: " + ex.getMessage(), ex);
         }
     }
 
@@ -393,7 +393,7 @@ public class DefaultRestClient implements RestClient {
             }
 
 
-            throw new RestClientException("HTTP POST request failed", ex);
+            throw new RestClientException("HTTP POST request failed, reason: " + ex.getMessage(), ex);
         }
     }
 
@@ -417,7 +417,7 @@ public class DefaultRestClient implements RestClient {
                     .exchangeToMono(rs -> handleResponse(rs, responseType))
                     .subscribe(onSuccess, onError);
         } catch (Exception ex) {
-            throw new RestClientException("HTTP POST request failed", ex);
+            throw new RestClientException("HTTP POST request failed, reason: " + ex.getMessage(), ex);
         }
     }
 
@@ -467,7 +467,7 @@ public class DefaultRestClient implements RestClient {
                 // Throw exceptions created by REST client
                 throw (RestClientException) ex.getCause();
             }
-            throw new RestClientException("HTTP PUT request failed", ex);
+            throw new RestClientException("HTTP PUT request failed, reason: " + ex.getMessage(), ex);
         }
     }
 
@@ -491,7 +491,7 @@ public class DefaultRestClient implements RestClient {
                     .exchangeToMono(rs -> handleResponse(rs, responseType))
                     .subscribe(onSuccess, onError);
         } catch (Exception ex) {
-            throw new RestClientException("HTTP PUT request failed", ex);
+            throw new RestClientException("HTTP PUT request failed, reason: " + ex.getMessage(), ex);
         }
     }
 
@@ -538,7 +538,7 @@ public class DefaultRestClient implements RestClient {
                 // Throw exceptions created by REST client
                 throw (RestClientException) ex.getCause();
             }
-            throw new RestClientException("HTTP DELETE request failed", ex);
+            throw new RestClientException("HTTP DELETE request failed, reason: " + ex.getMessage(), ex);
         }
     }
 
@@ -560,7 +560,7 @@ public class DefaultRestClient implements RestClient {
                     .exchangeToMono(rs -> handleResponse(rs, responseType))
                     .subscribe(onSuccess, onError);
         } catch (Exception ex) {
-            throw new RestClientException("HTTP DELETE request failed", ex);
+            throw new RestClientException("HTTP DELETE request failed, reason: " + ex.getMessage(), ex);
         }
     }
 
@@ -609,7 +609,7 @@ public class DefaultRestClient implements RestClient {
                 // Throw exceptions created by REST client
                 throw (RestClientException) ex.getCause();
             }
-            throw new RestClientException("HTTP PATCH request failed", ex);
+            throw new RestClientException("HTTP PATCH request failed, reason: " + ex.getMessage(), ex);
         }
     }
 
@@ -633,7 +633,7 @@ public class DefaultRestClient implements RestClient {
                     .exchangeToMono(rs -> handleResponse(rs, responseType))
                     .subscribe(onSuccess, onError);
         } catch (Exception ex) {
-            throw new RestClientException("HTTP PATCH request failed", ex);
+            throw new RestClientException("HTTP PATCH request failed, reason: " + ex.getMessage(), ex);
         }
     }
 
@@ -681,7 +681,7 @@ public class DefaultRestClient implements RestClient {
                 // Throw exceptions created by REST client
                 throw (RestClientException) ex.getCause();
             }
-            throw new RestClientException("HTTP HEAD request failed", ex);
+            throw new RestClientException("HTTP HEAD request failed, reason: " + ex.getMessage(), ex);
         }
     }
 
@@ -703,7 +703,7 @@ public class DefaultRestClient implements RestClient {
                     .exchangeToMono(rs -> handleResponse(rs, responseType))
                     .subscribe(onSuccess, onError);
         } catch (Exception ex) {
-            throw new RestClientException("HTTP HEAD request failed", ex);
+            throw new RestClientException("HTTP HEAD request failed, reason: " + ex.getMessage(), ex);
         }
     }
 
