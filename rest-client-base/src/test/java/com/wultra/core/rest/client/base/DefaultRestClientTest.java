@@ -15,10 +15,9 @@
  */
 package com.wultra.core.rest.client.base;
 
-import org.slf4j.LoggerFactory;
+import ch.qos.logback.classic.Logger;
 import ch.qos.logback.classic.spi.ILoggingEvent;
 import ch.qos.logback.core.read.ListAppender;
-import ch.qos.logback.classic.Logger;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.wultra.core.rest.client.base.model.TestRequest;
@@ -30,6 +29,7 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.slf4j.LoggerFactory;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.core.ParameterizedTypeReference;
@@ -52,10 +52,10 @@ import java.io.FileInputStream;
 import java.io.InputStream;
 import java.nio.ByteBuffer;
 import java.time.Duration;
+import java.util.List;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 import java.util.function.Consumer;
-import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -107,7 +107,6 @@ class DefaultRestClientTest {
         config.setHttpBasicAuthEnabled(true);
         config.setHttpBasicAuthUsername("test");
         config.setHttpBasicAuthPassword("test");
-        config.setResponseTimeout(Duration.ofSeconds(10));
         config.setSimpleLoggingEnabled(true);
         return config;
     }
@@ -741,13 +740,18 @@ class DefaultRestClientTest {
     @Test
     void testConfiguration() throws RestClientException {
         final RestClientConfiguration config = prepareConfiguration();
-        final DefaultRestClient restClient = new DefaultRestClient(config);
+        final DefaultRestClient defaultRestClient = new DefaultRestClient(config);
 
-        final Object handshakeTimeout = getField(restClient, "webClient.builder.connector.httpClient.config.sslProvider.handshakeTimeoutMillis");
+        // test real setting from configuration to the client
+        final Object handshakeTimeout = getField(defaultRestClient, "webClient.builder.connector.httpClient.config.sslProvider.handshakeTimeoutMillis");
         assertEquals(5000L, handshakeTimeout);
 
-        final Object responseTimeout = getField(restClient, "webClient.builder.connector.httpClient.config.responseTimeout");
-        assertEquals(Duration.ofSeconds(10), responseTimeout);
+        final Object responseTimeout = getField(defaultRestClient, "webClient.builder.connector.httpClient.config.responseTimeout");
+        assertEquals(Duration.ofSeconds(60), responseTimeout);
+
+        // test just the default values
+        assertEquals(Duration.ofHours(1), config.getMaxLifeTime());
+        assertEquals(Duration.ofSeconds(200), config.getMaxIdleTime());
     }
 
     @Test
