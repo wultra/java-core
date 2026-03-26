@@ -127,8 +127,8 @@ public class DatabaseAuditWriter implements AuditWriter {
     private void prepareSqlInsertQueries() {
         insertAuditLog = "INSERT INTO " +
                 tableNameAudit +
-                "(audit_log_id, application_name, audit_level, audit_type, timestamp_created, message, exception_message, stack_trace, param, calling_class, thread_name, version, build_time) " +
-                "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+                "(audit_log_id, application_name, audit_level, audit_type, timestamp_created, message, exception_message, stack_trace, param, calling_class, thread_name, version, build_time, subject_id) " +
+                "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
         insertAuditParam = "INSERT INTO " +
                 tableNameParam +
                 "(audit_log_id, timestamp_created, param_key, param_value) " +
@@ -213,6 +213,12 @@ public class DatabaseAuditWriter implements AuditWriter {
                                         ps.setString(11, StringUtil.trim(record.getThreadName(), 256));
                                         ps.setString(12, version);
                                         ps.setTimestamp(13, new Timestamp(buildTime.toEpochMilli()));
+                                        String subjectId = record.getSubjectId();
+                                        if (subjectId == null) {
+                                            ps.setNull(14, Types.VARCHAR);
+                                        } else {
+                                            ps.setString(14, StringUtil.trim(subjectId, 256));
+                                        }
                                     }
 
                                     public int getBatchSize() {

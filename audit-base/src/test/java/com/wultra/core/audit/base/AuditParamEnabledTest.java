@@ -127,6 +127,23 @@ class AuditParamEnabledTest {
     }
 
     @Test
+    void testAuditSubjectIdWithParams() {
+        final Audit audit = auditFactory.getAudit();
+        audit.info("test message", AuditDetail.builder()
+                .subjectId("test_subject_id")
+                .param("user_id", "test_id")
+                .build());
+        audit.flush();
+
+        final SqlRowSet rs = jdbcTemplate.queryForRowSet(
+                "SELECT * FROM audit_log al INNER JOIN audit_param ap ON al.audit_log_id = ap.audit_log_id");
+        assertTrue(rs.next());
+        assertEquals("test_subject_id", rs.getString("subject_id"));
+        assertEquals("user_id", rs.getString("param_key"));
+        assertEquals("test_id", rs.getString("param_value"));
+    }
+
+    @Test
     void testAuditCleanup() {
         final Audit audit = auditFactory.getAudit();
         audit.info("test message", AuditDetail.builder().param("my_id", "test_id").build());

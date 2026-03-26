@@ -27,6 +27,7 @@ public class AuditDetail {
 
     private String type;
     private final Map<String, Object> param = new LinkedHashMap<>();
+    private String subjectId;
 
     /**
      * Default constructor.
@@ -61,6 +62,19 @@ public class AuditDetail {
     }
 
     /**
+     * Constructor with audit type, parameters, and subject ID.
+     *
+     * @param type      Audit type.
+     * @param param     Audit parameters.
+     * @param subjectId Audit subject ID.
+     */
+    public AuditDetail(final String type, final Map<String, Object> param, final String subjectId) {
+        this.type = type;
+        this.param.putAll(param);
+        this.subjectId = subjectId;
+    }
+
+    /**
      * Get audit type.
      * @return Audit type.
      */
@@ -82,6 +96,24 @@ public class AuditDetail {
      */
     public Map<String, Object> getParam() {
         return param;
+    }
+
+    /**
+     * Get audit subject ID.
+     *
+     * @return Audit subject ID.
+     */
+    public String getSubjectId() {
+        return subjectId;
+    }
+
+    /**
+     * Set audit subject ID.
+     *
+     * @param subjectId Audit subject ID.
+     */
+    public void setSubjectId(final String subjectId) {
+        this.subjectId = subjectId;
     }
 
     /**
@@ -127,6 +159,17 @@ public class AuditDetail {
          */
         public Builder params(Map<String, Object> params) {
             auditDetail.getParam().putAll(params);
+            return this;
+        }
+
+        /**
+         * Set audit subject ID.
+         *
+         * @param subjectId Audit subject ID.
+         * @return Audit detail builder.
+         */
+        public Builder subjectId(final String subjectId) {
+            auditDetail.setSubjectId(subjectId);
             return this;
         }
 
