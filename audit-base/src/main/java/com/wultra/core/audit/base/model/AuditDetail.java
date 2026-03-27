@@ -66,7 +66,7 @@ public class AuditDetail {
      *
      * @param type      Audit type.
      * @param param     Audit parameters.
-     * @param subjectId Audit subject ID.
+     * @param subjectId Audit subject ID. Use to link the audit record to an entity it is related to (e.g. user ID for user-related audit records).
      */
     public AuditDetail(final String type, final Map<String, Object> param, final String subjectId) {
         this.type = type;
@@ -165,7 +165,7 @@ public class AuditDetail {
         /**
          * Set audit subject ID.
          *
-         * @param subjectId Audit subject ID.
+         * @param subjectId Audit subject ID. Use to link the audit record to an entity it is related to (e.g. user ID for user-related audit records).
          * @return Audit detail builder.
          */
         public Builder subjectId(final String subjectId) {

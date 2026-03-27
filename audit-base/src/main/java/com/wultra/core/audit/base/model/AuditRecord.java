@@ -48,7 +48,7 @@ public class AuditRecord {
      * @param level Audit level.
      * @param type Audit type.
      * @param param Audit parameters.
-     * @param subjectId Subject ID.
+     * @param subjectId Subject ID linking the audit record to an entity it is related to.
      * @param args Message arguments.
      */
     public AuditRecord(
@@ -169,7 +169,7 @@ public class AuditRecord {
     /**
      * Get subject ID.
      *
-     * @return Subject ID.
+     * @return Subject ID linking the audit record to an entity it is related to.
      */
     public String getSubjectId() {
         return subjectId;
