@@ -36,6 +36,7 @@ public class AuditRecord {
     private final AuditLevel level;
     private final String type;
     private final Map<String, Object> param;
+    private final String subjectId;
     private String message;
     private Throwable throwable;
     private String callingClass;
@@ -47,13 +48,22 @@ public class AuditRecord {
      * @param level Audit level.
      * @param type Audit type.
      * @param param Audit parameters.
+     * @param subjectId Subject ID linking the audit record to an entity it is related to.
      * @param args Message arguments.
      */
-    public AuditRecord(@NonNull String message, @NonNull AuditLevel level, String type, @NonNull Map<String, Object> param, Object[] args) {
+    public AuditRecord(
+            final @NonNull String message,
+            final @NonNull AuditLevel level,
+            final String type,
+            final @NonNull Map<String, Object> param,
+            final String subjectId,
+            final Object[] args
+    ) {
         this.id = UUID.randomUUID().toString();
         this.timestamp = new Date();
         this.level = level;
         this.type = type;
+        this.subjectId = subjectId;
         this.param = param;
         if (args != null) {
             parseArgs(message, args);
@@ -156,6 +166,15 @@ public class AuditRecord {
         this.threadName = threadName;
     }
 
+    /**
+     * Get subject ID.
+     *
+     * @return Subject ID linking the audit record to an entity it is related to.
+     */
+    public String getSubjectId() {
+        return subjectId;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -176,6 +195,7 @@ public class AuditRecord {
                 ", timestamp=" + timestamp +
                 ", level=" + level +
                 ", type='" + type + '\'' +
+                ", subjectId='" + subjectId + '\'' +
                 ", param=" + param +
                 ", message='" + message + '\'' +
                 ", throwable=" + throwable +

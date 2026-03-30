@@ -223,6 +223,40 @@ class AuditTest {
     }
 
     @Test
+    void testAuditSubjectId() {
+        final Audit audit = auditFactory.getAudit();
+        audit.info("test message", AuditDetail.builder().subjectId("test_subject_id").build());
+        audit.flush();
+
+        final SqlRowSet rs = jdbcTemplate.queryForRowSet("SELECT * FROM audit_log");
+        assertTrue(rs.next());
+        assertEquals("test_subject_id", rs.getString("subject_id"));
+    }
+
+    @Test
+    void testAuditSubjectIdNull() {
+        final Audit audit = auditFactory.getAudit();
+        audit.info("test message");
+        audit.flush();
+
+        final SqlRowSet rs = jdbcTemplate.queryForRowSet("SELECT * FROM audit_log");
+        assertTrue(rs.next());
+        assertNull(rs.getString("subject_id"));
+    }
+
+    @Test
+    void testAuditSubjectIdWithType() {
+        final Audit audit = auditFactory.getAudit();
+        audit.info("test message", AuditDetail.builder().type("TEST").subjectId("test_subject_id").build());
+        audit.flush();
+
+        final SqlRowSet rs = jdbcTemplate.queryForRowSet("SELECT * FROM audit_log");
+        assertTrue(rs.next());
+        assertEquals("TEST", rs.getString("audit_type"));
+        assertEquals("test_subject_id", rs.getString("subject_id"));
+    }
+
+    @Test
     void testScheduledFlush() {
         Audit audit = auditFactory.getAudit();
         audit.info("test message");

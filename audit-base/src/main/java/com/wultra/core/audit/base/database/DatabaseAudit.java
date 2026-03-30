@@ -83,7 +83,7 @@ public class DatabaseAudit implements Audit {
         if (!isErrorEnabled()) {
             return;
         }
-        final AuditRecord auditRecord = new AuditRecord(message, AuditLevel.ERROR, detail.getType(), detail.getParam(), args);
+        final AuditRecord auditRecord = new AuditRecord(message, AuditLevel.ERROR, detail.getType(), detail.getParam(), detail.getSubjectId(), args);
         write(auditRecord);
     }
 
@@ -116,7 +116,7 @@ public class DatabaseAudit implements Audit {
         if (!isWarnEnabled()) {
             return;
         }
-        final AuditRecord auditRecord = new AuditRecord(message, AuditLevel.WARN, detail.getType(), detail.getParam(), args);
+        final AuditRecord auditRecord = new AuditRecord(message, AuditLevel.WARN, detail.getType(), detail.getParam(), detail.getSubjectId(), args);
         write(auditRecord);
     }
 
@@ -149,7 +149,7 @@ public class DatabaseAudit implements Audit {
         if (!isInfoEnabled()) {
             return;
         }
-        final AuditRecord auditRecord = new AuditRecord(message, AuditLevel.INFO, detail.getType(), detail.getParam(), args);
+        final AuditRecord auditRecord = new AuditRecord(message, AuditLevel.INFO, detail.getType(), detail.getParam(), detail.getSubjectId(), args);
         write(auditRecord);
     }
 
@@ -182,7 +182,7 @@ public class DatabaseAudit implements Audit {
         if (!isDebugEnabled()) {
             return;
         }
-        final AuditRecord auditRecord = new AuditRecord(message, AuditLevel.DEBUG, detail.getType(), detail.getParam(), args);
+        final AuditRecord auditRecord = new AuditRecord(message, AuditLevel.DEBUG, detail.getType(), detail.getParam(), detail.getSubjectId(), args);
         write(auditRecord);
     }
 
@@ -215,7 +215,7 @@ public class DatabaseAudit implements Audit {
         if (!isTraceEnabled()) {
             return;
         }
-        final AuditRecord auditRecord = new AuditRecord(message, AuditLevel.TRACE, detail.getType(), detail.getParam(), args);
+        final AuditRecord auditRecord = new AuditRecord(message, AuditLevel.TRACE, detail.getType(), detail.getParam(), detail.getSubjectId(), args);
         write(auditRecord);
     }
 
@@ -248,7 +248,7 @@ public class DatabaseAudit implements Audit {
         if (!isLevelEnabled(level)) {
             return;
         }
-        final AuditRecord auditRecord = new AuditRecord(message, level, detail.getType(), detail.getParam(), args);
+        final AuditRecord auditRecord = new AuditRecord(message, level, detail.getType(), detail.getParam(), detail.getSubjectId(), args);
         write(auditRecord);
     }
 
