@@ -15,11 +15,11 @@
  */
 package com.wultra.core.http.common.headers;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
+import tools.jackson.core.JacksonException;
+import tools.jackson.databind.ObjectMapper;
 
 import java.util.stream.Stream;
 
@@ -44,7 +44,7 @@ class UserAgentTest {
         assertEquals(expectedDevice, deviceOptional.get());
     }
 
-    private static Stream<Arguments> provideUserAgents() throws JsonProcessingException {
+    private static Stream<Arguments> provideUserAgents() throws JacksonException {
         return Stream.of(
                 Arguments.of("PowerAuthNetworking/1.1.7 (en; cellular) com.wultra.app.Mobile-Token.wultra_test/2.0.0 (Apple; iOS/16.6.1; iphone12,3)", readDevice("""
                         {
@@ -127,7 +127,7 @@ class UserAgentTest {
         );
     }
 
-    private static UserAgent.Device readDevice(final String json) throws JsonProcessingException {
+    private static UserAgent.Device readDevice(final String json) throws JacksonException {
         return new ObjectMapper().readValue(json, UserAgent.Device.class);
     }
 

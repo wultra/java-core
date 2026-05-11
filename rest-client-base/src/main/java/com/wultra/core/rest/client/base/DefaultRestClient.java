@@ -15,9 +15,6 @@
  */
 package com.wultra.core.rest.client.base;
 
-import com.fasterxml.jackson.databind.Module;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.type.TypeFactory;
 import com.wultra.core.rest.client.base.util.SslUtils;
 import com.wultra.core.rest.model.base.request.ObjectRequest;
 import com.wultra.core.rest.model.base.response.ErrorResponse;
@@ -41,7 +38,10 @@ import org.springframework.http.client.reactive.ReactorClientHttpConnector;
 import org.springframework.http.codec.ClientCodecConfigurer;
 import org.springframework.http.codec.json.Jackson2JsonDecoder;
 import org.springframework.http.codec.json.Jackson2JsonEncoder;
+import org.springframework.http.codec.json.JacksonJsonDecoder;
+import org.springframework.http.codec.json.JacksonJsonEncoder;
 import org.springframework.util.LinkedMultiValueMap;
+import org.springframework.util.MimeType;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.reactive.function.BodyInserters;
 import org.springframework.web.reactive.function.client.*;
@@ -51,6 +51,10 @@ import reactor.netty.resources.ConnectionProvider;
 import reactor.netty.tcp.SslProvider;
 import reactor.netty.transport.ProxyProvider;
 import reactor.netty.transport.logging.AdvancedByteBufFormat;
+import tools.jackson.databind.JacksonModule;
+import tools.jackson.databind.ObjectMapper;
+import tools.jackson.databind.json.JsonMapper;
+import tools.jackson.databind.type.TypeFactory;
 
 import java.io.IOException;
 import java.lang.reflect.Type;
@@ -78,7 +82,7 @@ public class DefaultRestClient implements RestClient {
 
     private WebClient webClient;
     private final RestClientConfiguration config;
-    private final Collection<Module> modules;
+    private final Collection<JacksonModule> modules;
 
     /**
      * Construct default REST client without any additional configuration.
@@ -99,7 +103,7 @@ public class DefaultRestClient implements RestClient {
      * @param modules jackson modules
      * @throws RestClientException Thrown in case client initialization fails.
      */
-    public DefaultRestClient(final RestClientConfiguration config, final Module... modules) throws RestClientException {
+    public DefaultRestClient(final RestClientConfiguration config, final JacksonModule... modules) throws RestClientException {
         // Use WebClient configuration from the config constructor parameter
         this.config = config;
         this.modules = modules == null ? Collections.emptyList() : Arrays.asList(modules);
@@ -173,13 +177,13 @@ public class DefaultRestClient implements RestClient {
             });
         }
 
-        final Optional<ObjectMapper> objectMapperOptional = createObjectMapper(config, modules);
+        final Optional<JsonMapper> objectMapperOptional = createObjectMapper(config, modules);
         final ExchangeStrategies exchangeStrategies = ExchangeStrategies.builder()
                 .codecs(configurer -> {
                     ClientCodecConfigurer.ClientDefaultCodecs defaultCodecs = configurer.defaultCodecs();
-                    objectMapperOptional.ifPresent(objectMapper -> {
-                        defaultCodecs.jackson2JsonEncoder(new Jackson2JsonEncoder(objectMapper, MediaType.APPLICATION_JSON));
-                        defaultCodecs.jackson2JsonDecoder(new Jackson2JsonDecoder(objectMapper, MediaType.APPLICATION_JSON));
+                    objectMapperOptional.ifPresent(mapper -> {
+                        defaultCodecs.jacksonJsonEncoder(new JacksonJsonEncoder(mapper, MediaType.APPLICATION_JSON));
+                        defaultCodecs.jacksonJsonDecoder(new JacksonJsonDecoder(mapper, MediaType.APPLICATION_JSON));
                     });
                     defaultCodecs.maxInMemorySize(config.getMaxInMemorySize());
                 })
@@ -271,21 +275,34 @@ public class DefaultRestClient implements RestClient {
         return HttpClient.create(providerBuilder.build());
     }
 
-    private static Optional<ObjectMapper> createObjectMapper(final RestClientConfiguration config, Collection<Module> modules) {
+    private static Optional<JsonMapper> createObjectMapper(final RestClientConfiguration config, Collection<JacksonModule> modules) {
         final RestClientConfiguration.JacksonConfiguration jacksonConfiguration = config.getJacksonConfiguration();
         if (jacksonConfiguration == null && modules.isEmpty()) {
             return Optional.empty();
         }
 
         logger.debug("Configuring object mapper");
-        final ObjectMapper objectMapper = new ObjectMapper();
+        JsonMapper.Builder builder = JsonMapper.builder();
+        builder.addModules(modules);
         if (jacksonConfiguration != null) {
-            jacksonConfiguration.getDeserialization().forEach(objectMapper::configure);
-            jacksonConfiguration.getSerialization().forEach(objectMapper::configure);
+            jacksonConfiguration.getDeserialization()
+                    .forEach((feature, state) -> {
+                        if (state) {
+                            builder.enable(feature);
+                        } else {
+                            builder.disable(feature);
+                        }
+                    });
+            jacksonConfiguration.getSerialization()
+                    .forEach((feature, state) -> {
+                        if (state) {
+                            builder.enable(feature);
+                        } else {
+                            builder.disable(feature);
+                        }
+                    });
         }
-        objectMapper.registerModules(modules);
-
-        return Optional.of(objectMapper);
+        return Optional.of(builder.build());
     }
 
     private static void validateConfiguration(final RestClientConfiguration config) throws RestClientException {
@@ -765,15 +782,11 @@ public class DefaultRestClient implements RestClient {
             // Try to parse ErrorResponse in case expected response type is ObjectResponse
             Class<?> clazz = TypeFactory.rawClass(responseType.getType());
             if (clazz.isAssignableFrom(ObjectResponse.class)) {
-                try {
-                    // Use an ObjectMapper to deserialize the error response
-                    ObjectMapper objectMapper = new ObjectMapper();
-                    ErrorResponse errorResponse = objectMapper.readValue(rawResponse, ErrorResponse.class);
-                    if (errorResponse != null) {
-                        return Mono.error(new RestClientException("HTTP error occurred: " + response.statusCode(), response.statusCode(), rawResponse, rawResponseHeaders, errorResponse));
-                    }
-                } catch (IOException ex) {
-                    // Exception is handled silently, ErrorResponse is not available, use a regular error with raw response
+                // Use an ObjectMapper to deserialize the error response
+                ObjectMapper objectMapper = new ObjectMapper();
+                ErrorResponse errorResponse = objectMapper.readValue(rawResponse, ErrorResponse.class);
+                if (errorResponse != null) {
+                    return Mono.error(new RestClientException("HTTP error occurred: " + response.statusCode(), response.statusCode(), rawResponse, rawResponseHeaders, errorResponse));
                 }
             }
             return Mono.error(new RestClientException("HTTP error occurred: " + response.statusCode(), response.statusCode(), rawResponse, rawResponseHeaders));
@@ -872,7 +885,7 @@ public class DefaultRestClient implements RestClient {
 
         private final RestClientConfiguration config;
 
-        private final Collection<Module> modules;
+        private final Collection<JacksonModule> modules;
 
         /**
          * Construct new builder with given base URL.

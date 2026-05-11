@@ -16,12 +16,12 @@
 package com.wultra.core.audit.base.util;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.SerializationFeature;
-import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import tools.jackson.core.JacksonException;
+import tools.jackson.databind.ObjectMapper;
+import tools.jackson.databind.SerializationFeature;
+import tools.jackson.databind.json.JsonMapper;
 
 import java.util.Map;
 
@@ -34,14 +34,12 @@ public class JsonUtil {
 
     private static final Logger logger = LoggerFactory.getLogger(JsonUtil.class);
 
-    private final ObjectMapper objectMapper = new ObjectMapper();
-
-    {
-        objectMapper.setSerializationInclusion(JsonInclude.Include.NON_EMPTY);
-        objectMapper.registerModule(new JavaTimeModule());
-        objectMapper.configure(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS, false);
-        objectMapper.configure(SerializationFeature.FAIL_ON_EMPTY_BEANS, false);
-    }
+    private final ObjectMapper objectMapper = JsonMapper.builder()
+            .changeDefaultPropertyInclusion(incl -> incl
+                    .withValueInclusion(JsonInclude.Include.NON_EMPTY)
+                    .withContentInclusion(JsonInclude.Include.NON_EMPTY))
+            .disable(SerializationFeature.FAIL_ON_EMPTY_BEANS)
+            .build();
 
     /**
      * Serialize an object into JSON.
@@ -51,7 +49,7 @@ public class JsonUtil {
     public String serializeObject(Object o) {
         try {
             return objectMapper.writeValueAsString(o);
-        } catch (JsonProcessingException ex) {
+        } catch (JacksonException ex) {
             logger.warn(ex.getMessage(), ex);
         }
         return "";
@@ -65,7 +63,7 @@ public class JsonUtil {
     public String serializeMap(Map<String, Object> map) {
         try {
             return objectMapper.writeValueAsString(map);
-        } catch (JsonProcessingException ex) {
+        } catch (JacksonException ex) {
             logger.warn(ex.getMessage(), ex);
         }
         return "{}";

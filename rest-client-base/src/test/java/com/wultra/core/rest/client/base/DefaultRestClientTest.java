@@ -18,8 +18,6 @@ package com.wultra.core.rest.client.base;
 import ch.qos.logback.classic.Logger;
 import ch.qos.logback.classic.spi.ILoggingEvent;
 import ch.qos.logback.core.read.ListAppender;
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.wultra.core.rest.client.base.model.TestRequest;
 import com.wultra.core.rest.client.base.model.TestResponse;
 import com.wultra.core.rest.model.base.request.ObjectRequest;
@@ -46,6 +44,8 @@ import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import org.springframework.util.ResourceUtils;
 import reactor.core.publisher.Flux;
+import tools.jackson.core.JacksonException;
+import tools.jackson.databind.ObjectMapper;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -683,7 +683,7 @@ class DefaultRestClientTest {
     }
 
     @Test
-    void testPostWithDataBuffer() throws RestClientException, JsonProcessingException {
+    void testPostWithDataBuffer() throws RestClientException, JacksonException {
         String requestData = String.valueOf(System.currentTimeMillis());
         ObjectRequest<TestRequest> request = new ObjectRequest<>(new TestRequest(requestData));
         ObjectMapper objectMapper = new ObjectMapper();
