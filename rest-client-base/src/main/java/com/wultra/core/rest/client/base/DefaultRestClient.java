@@ -33,6 +33,7 @@ import org.reactivestreams.Publisher;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.core.ParameterizedTypeReference;
+import org.springframework.core.ResolvableType;
 import org.springframework.core.io.buffer.DataBuffer;
 import org.springframework.core.io.buffer.DataBufferLimitException;
 import org.springframework.http.*;
@@ -304,7 +305,7 @@ public class DefaultRestClient implements RestClient {
             return buildUri(webClient.get(), path, queryParams)
                     .headers(h -> {
                         if (headers != null) {
-                            h.addAll(headers);
+                            headers.forEach(h::addAll);
                         }
                     })
                     .exchangeToMono(rs -> handleResponse(rs, responseType))
@@ -329,7 +330,7 @@ public class DefaultRestClient implements RestClient {
             buildUri(webClient.get(), path, queryParams)
                     .headers(h -> {
                         if (headers != null) {
-                            h.addAll(headers);
+                            headers.forEach(h::addAll);
                         }
                     })
                     .accept(config.getAcceptType())
@@ -373,7 +374,7 @@ public class DefaultRestClient implements RestClient {
             WebClient.RequestBodySpec spec = buildUri(webClient.post(), path, queryParams)
                     .headers(h -> {
                         if (headers != null) {
-                            h.addAll(headers);
+                            headers.forEach(h::addAll);
                         }
                     })
                     .contentType(resolveContentType(config, headers))
@@ -408,7 +409,7 @@ public class DefaultRestClient implements RestClient {
             WebClient.RequestBodySpec spec = buildUri(webClient.post(), path, queryParams)
                     .headers(h -> {
                         if (headers != null) {
-                            h.addAll(headers);
+                            headers.forEach(h::addAll);
                         }
                     })
                     .contentType(resolveContentType(config, headers))
@@ -454,7 +455,7 @@ public class DefaultRestClient implements RestClient {
             WebClient.RequestBodySpec spec = buildUri(webClient.put(), path, queryParams)
                     .headers(h -> {
                         if (headers != null) {
-                            h.addAll(headers);
+                            headers.forEach(h::addAll);
                         }
                     })
                     .contentType(resolveContentType(config, headers))
@@ -482,7 +483,7 @@ public class DefaultRestClient implements RestClient {
             WebClient.RequestBodySpec spec = buildUri(webClient.put(), path, queryParams)
                     .headers(h -> {
                         if (headers != null) {
-                            h.addAll(headers);
+                            headers.forEach(h::addAll);
                         }
                     })
                     .contentType(resolveContentType(config, headers))
@@ -528,7 +529,7 @@ public class DefaultRestClient implements RestClient {
             return buildUri(webClient.delete(), path, queryParams)
                     .headers(h -> {
                         if (headers != null) {
-                            h.addAll(headers);
+                            headers.forEach(h::addAll);
                         }
                     })
                     .exchangeToMono(rs -> handleResponse(rs, responseType))
@@ -553,7 +554,7 @@ public class DefaultRestClient implements RestClient {
             buildUri(webClient.delete(), path, queryParams)
                     .headers(h -> {
                         if (headers != null) {
-                            h.addAll(headers);
+                            headers.forEach(h::addAll);
                         }
                     })
                     .accept(config.getAcceptType())
@@ -596,7 +597,7 @@ public class DefaultRestClient implements RestClient {
             WebClient.RequestBodySpec spec = buildUri(webClient.patch(), path, queryParams)
                     .headers(h -> {
                         if (headers != null) {
-                            h.addAll(headers);
+                            headers.forEach(h::addAll);
                         }
                     })
                     .contentType(resolveContentType(config, headers))
@@ -624,7 +625,7 @@ public class DefaultRestClient implements RestClient {
             WebClient.RequestBodySpec spec = buildUri(webClient.patch(), path, queryParams)
                     .headers(h -> {
                         if (headers != null) {
-                            h.addAll(headers);
+                            headers.forEach(h::addAll);
                         }
                     })
                     .contentType(resolveContentType(config, headers))
@@ -670,7 +671,7 @@ public class DefaultRestClient implements RestClient {
             return buildUri(webClient.head(), path, queryParams)
                     .headers(h -> {
                         if (headers != null) {
-                            h.addAll(headers);
+                            headers.forEach(h::addAll);
                         }
                     })
                     .exchangeToMono(rs -> handleResponse(rs, responseType))
@@ -696,7 +697,7 @@ public class DefaultRestClient implements RestClient {
             buildUri(webClient.head(), path, queryParams)
                     .headers(h -> {
                         if (headers != null) {
-                            h.addAll(headers);
+                            headers.forEach(h::addAll);
                         }
                     })
                     .accept(config.getAcceptType())
@@ -738,12 +739,8 @@ public class DefaultRestClient implements RestClient {
      * @return Parameterized type reference of ObjectResponse.
      */
     private <T> ParameterizedTypeReference<ObjectResponse<T>> getTypeReference(Class<T> responseType) {
-        return new ParameterizedTypeReference<>() {
-            @Override
-            public Type getType() {
-                return TypeFactory.defaultInstance().constructParametricType(ObjectResponse.class, responseType);
-            }
-        };
+        final Type type = ResolvableType.forClassWithGenerics(ObjectResponse.class, responseType).getType();
+        return ParameterizedTypeReference.forType(type);
     }
 
     /**

@@ -706,8 +706,8 @@ class DefaultRestClientTest {
         MultipartBodyBuilder bodyBuilder = new MultipartBodyBuilder();
         bodyBuilder.part("request", testRequest);
 
-        HttpHeaders headers = new HttpHeaders();
-        headers.setContentType(MediaType.MULTIPART_FORM_DATA);
+        final MultiValueMap<String, String> headers = new LinkedMultiValueMap<>();
+        headers.add("Content-Type", MediaType.MULTIPART_FORM_DATA_VALUE);
 
         final ResponseEntity<ObjectResponse<TestResponse>> responseEntity =
                 restClient.post("/multipart-request-response", bodyBuilder.build(), null, headers, new ParameterizedTypeReference<>(){});
@@ -720,8 +720,8 @@ class DefaultRestClientTest {
 
     @Test
     void testPostFormData() throws Exception {
-        final HttpHeaders headers = new HttpHeaders();
-        headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
+        final MultiValueMap<String, String> headers = new LinkedMultiValueMap<>();
+        headers.add("Content-Type", MediaType.APPLICATION_FORM_URLENCODED_VALUE);
 
         final MultiValueMap<String, String> map = new LinkedMultiValueMap<>();
         map.add("grant_type", "authorization_code");
@@ -742,8 +742,8 @@ class DefaultRestClientTest {
     void testPostOctetStream() throws Exception {
         final byte[] request = {1, 2};
 
-        final HttpHeaders headers = new HttpHeaders();
-        headers.setContentType(MediaType.APPLICATION_OCTET_STREAM);
+        final MultiValueMap<String, String> headers = new LinkedMultiValueMap<>();
+        headers.add("Content-Type", MediaType.APPLICATION_OCTET_STREAM_VALUE);
 
         final ResponseEntity<ObjectResponse<TestResponse>> responseEntity =
                 restClient.post("/octet-stream", request, null, headers, new ParameterizedTypeReference<>(){});
@@ -788,7 +788,7 @@ class DefaultRestClientTest {
 
         final ResponseEntity<ObjectResponse<TestResponse>> responseEntity =
                 restClient.post("/request-headers-response", null, new ParameterizedTypeReference<>(){});
-        assertTrue(responseEntity.getHeaders().containsKey(headerName));
+        assertTrue(responseEntity.getHeaders().containsHeader(headerName));
         assertEquals(headerVaue, responseEntity.getHeaders().getFirst(headerName));
     }
 
