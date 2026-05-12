@@ -36,8 +36,7 @@ public class JsonUtil {
 
     private final ObjectMapper objectMapper = JsonMapper.builder()
             .changeDefaultPropertyInclusion(incl -> incl
-                    .withValueInclusion(JsonInclude.Include.NON_EMPTY)
-                    .withContentInclusion(JsonInclude.Include.NON_EMPTY))
+                    .withValueInclusion(JsonInclude.Include.NON_EMPTY))
             .disable(SerializationFeature.FAIL_ON_EMPTY_BEANS)
             .build();
 
