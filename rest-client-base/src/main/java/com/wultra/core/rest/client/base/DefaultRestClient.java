@@ -1094,8 +1094,8 @@ public class DefaultRestClient implements RestClient {
          * @param modules Jackson modules.
          * @return Builder.
          */
-        public Builder modules(Collection<Module> modules) {
-            modules.addAll(modules);
+        public Builder modules(Collection<JacksonModule> modules) {
+            this.modules.addAll(modules);
             return this;
         }
 
