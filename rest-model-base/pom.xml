@@ -23,7 +23,6 @@
 		<dependency>
 			<groupId>tools.jackson.core</groupId>
 			<artifactId>jackson-databind</artifactId>
-			<scope>compile</scope>
 		</dependency>
 	</dependencies>
 
