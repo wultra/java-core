@@ -283,22 +283,8 @@ public class DefaultRestClient implements RestClient {
         JsonMapper.Builder builder = JsonMapper.builder();
         builder.addModules(modules);
         if (jacksonConfiguration != null) {
-            jacksonConfiguration.getDeserialization()
-                    .forEach((feature, state) -> {
-                        if (state) {
-                            builder.enable(feature);
-                        } else {
-                            builder.disable(feature);
-                        }
-                    });
-            jacksonConfiguration.getSerialization()
-                    .forEach((feature, state) -> {
-                        if (state) {
-                            builder.enable(feature);
-                        } else {
-                            builder.disable(feature);
-                        }
-                    });
+            jacksonConfiguration.getDeserialization().forEach(builder::configure);
+            jacksonConfiguration.getSerialization().forEach(builder::configure);
         }
         return Optional.of(builder.build());
     }
