@@ -43,7 +43,6 @@
             <groupId>com.wultra.core</groupId>
             <artifactId>rest-model-base</artifactId>
             <version>${project.version}</version>
-            <scope>compile</scope>
         </dependency>
         <dependency>
             <groupId>org.slf4j</groupId>
