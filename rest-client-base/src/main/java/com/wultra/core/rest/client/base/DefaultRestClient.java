@@ -48,6 +48,7 @@ import reactor.netty.resources.ConnectionProvider;
 import reactor.netty.tcp.SslProvider;
 import reactor.netty.transport.ProxyProvider;
 import reactor.netty.transport.logging.AdvancedByteBufFormat;
+import tools.jackson.databind.DatabindException;
 import tools.jackson.databind.JacksonModule;
 import tools.jackson.databind.ObjectMapper;
 import tools.jackson.databind.json.JsonMapper;
@@ -779,11 +780,15 @@ public class DefaultRestClient implements RestClient {
             // Try to parse ErrorResponse in case expected response type is ObjectResponse
             Class<?> clazz = TypeFactory.rawClass(responseType.getType());
             if (clazz.isAssignableFrom(ObjectResponse.class)) {
-                // Use an ObjectMapper to deserialize the error response
-                ObjectMapper objectMapper = new ObjectMapper();
-                ErrorResponse errorResponse = objectMapper.readValue(rawResponse, ErrorResponse.class);
-                if (errorResponse != null) {
-                    return Mono.error(new RestClientException("HTTP error occurred: " + response.statusCode(), response.statusCode(), rawResponse, rawResponseHeaders, errorResponse));
+                try {
+                    // Use an ObjectMapper to deserialize the error response
+                    ObjectMapper objectMapper = new ObjectMapper();
+                    ErrorResponse errorResponse = objectMapper.readValue(rawResponse, ErrorResponse.class);
+                    if (errorResponse != null) {
+                        return Mono.error(new RestClientException("HTTP error occurred: " + response.statusCode(), response.statusCode(), rawResponse, rawResponseHeaders, errorResponse));
+                    }
+                } catch (DatabindException e) {
+                    // Exception is handled silently, ErrorResponse is not available, use a regular error with raw response
                 }
             }
             return Mono.error(new RestClientException("HTTP error occurred: " + response.statusCode(), response.statusCode(), rawResponse, rawResponseHeaders));
