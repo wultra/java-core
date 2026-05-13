@@ -707,7 +707,7 @@ class DefaultRestClientTest {
         bodyBuilder.part("request", testRequest);
 
         final MultiValueMap<String, String> headers = new LinkedMultiValueMap<>();
-        headers.add("Content-Type", MediaType.MULTIPART_FORM_DATA_VALUE);
+        headers.add(HttpHeaders.CONTENT_TYPE, MediaType.MULTIPART_FORM_DATA_VALUE);
 
         final ResponseEntity<ObjectResponse<TestResponse>> responseEntity =
                 restClient.post("/multipart-request-response", bodyBuilder.build(), null, headers, new ParameterizedTypeReference<>(){});
@@ -721,7 +721,7 @@ class DefaultRestClientTest {
     @Test
     void testPostFormData() throws Exception {
         final MultiValueMap<String, String> headers = new LinkedMultiValueMap<>();
-        headers.add("Content-Type", MediaType.APPLICATION_FORM_URLENCODED_VALUE);
+        headers.add(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_FORM_URLENCODED_VALUE);
 
         final MultiValueMap<String, String> map = new LinkedMultiValueMap<>();
         map.add("grant_type", "authorization_code");
@@ -743,7 +743,7 @@ class DefaultRestClientTest {
         final byte[] request = {1, 2};
 
         final MultiValueMap<String, String> headers = new LinkedMultiValueMap<>();
-        headers.add("Content-Type", MediaType.APPLICATION_OCTET_STREAM_VALUE);
+        headers.add(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_OCTET_STREAM_VALUE);
 
         final ResponseEntity<ObjectResponse<TestResponse>> responseEntity =
                 restClient.post("/octet-stream", request, null, headers, new ParameterizedTypeReference<>(){});
