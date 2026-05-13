@@ -20,6 +20,7 @@ import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 import tools.jackson.core.JacksonException;
 import tools.jackson.databind.ObjectMapper;
+import tools.jackson.databind.json.JsonMapper;
 
 import java.util.stream.Stream;
 
@@ -128,7 +129,8 @@ class UserAgentTest {
     }
 
     private static UserAgent.Device readDevice(final String json) throws JacksonException {
-        return new ObjectMapper().readValue(json, UserAgent.Device.class);
+        ObjectMapper objectMapper = JsonMapper.builder().build();
+        return objectMapper.readValue(json, UserAgent.Device.class);
     }
 
 }

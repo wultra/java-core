@@ -28,8 +28,6 @@ import io.netty.handler.ssl.SslContext;
 import jdk.net.ExtendedSocketOptions;
 import lombok.extern.slf4j.Slf4j;
 import org.reactivestreams.Publisher;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.core.ResolvableType;
 import org.springframework.core.io.buffer.DataBuffer;
@@ -55,7 +53,6 @@ import tools.jackson.databind.ObjectMapper;
 import tools.jackson.databind.json.JsonMapper;
 import tools.jackson.databind.type.TypeFactory;
 
-import java.io.IOException;
 import java.lang.reflect.Type;
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -768,7 +765,7 @@ public class DefaultRestClient implements RestClient {
             if (clazz.isAssignableFrom(ObjectResponse.class)) {
                 try {
                     // Use an ObjectMapper to deserialize the error response
-                    ObjectMapper objectMapper = new ObjectMapper();
+                    ObjectMapper objectMapper = JsonMapper.builder().build();
                     ErrorResponse errorResponse = objectMapper.readValue(rawResponse, ErrorResponse.class);
                     if (errorResponse != null) {
                         return Mono.error(new RestClientException("HTTP error occurred: " + response.statusCode(), response.statusCode(), rawResponse, rawResponseHeaders, errorResponse));
