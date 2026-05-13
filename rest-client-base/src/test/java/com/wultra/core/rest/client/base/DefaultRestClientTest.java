@@ -683,7 +683,7 @@ class DefaultRestClientTest {
     }
 
     @Test
-    void testPostWithDataBuffer() throws RestClientException, JacksonException {
+    void testPostWithDataBuffer() throws Exception {
         String requestData = String.valueOf(System.currentTimeMillis());
         ObjectRequest<TestRequest> request = new ObjectRequest<>(new TestRequest(requestData));
         ObjectMapper objectMapper = new ObjectMapper();
