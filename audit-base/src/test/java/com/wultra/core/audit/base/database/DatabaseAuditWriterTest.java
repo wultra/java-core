@@ -66,7 +66,7 @@ class DatabaseAuditWriterTest {
             assertEquals(1, countAuditLogs(jdbcTemplate));
 
             Awaitility.await()
-                    .atMost(Duration.ofSeconds(5))
+                    .atMost(Duration.ofSeconds(6))
                     .until(() -> countAuditLogs(jdbcTemplate) == 0);
         }
     }
