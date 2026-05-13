@@ -1,5 +1,5 @@
 # Changelog
 
 ## 2.2.0
-- Migrated to Spring Boot 4 and Jackson 3.
+- [#451](https://github.com/wultra/java-core/issues/451) - Support Spring Boot 4.0.x Migrated to Spring Boot 4 and Jackson 3.
 
