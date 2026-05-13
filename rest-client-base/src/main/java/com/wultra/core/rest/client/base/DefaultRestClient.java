@@ -26,6 +26,7 @@ import io.netty.channel.socket.nio.NioChannelOption;
 import io.netty.handler.logging.LogLevel;
 import io.netty.handler.ssl.SslContext;
 import jdk.net.ExtendedSocketOptions;
+import lombok.extern.slf4j.Slf4j;
 import org.reactivestreams.Publisher;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -68,9 +69,8 @@ import java.util.function.Consumer;
  *
  * @author Roman Strobl, roman.strobl@wultra.com
  */
+@Slf4j
 public class DefaultRestClient implements RestClient {
-
-    private static final Logger logger = LoggerFactory.getLogger(DefaultRestClient.class);
 
     /**
      * Default max connections.
@@ -774,7 +774,7 @@ public class DefaultRestClient implements RestClient {
                         return Mono.error(new RestClientException("HTTP error occurred: " + response.statusCode(), response.statusCode(), rawResponse, rawResponseHeaders, errorResponse));
                     }
                 } catch (DatabindException e) {
-                    // Exception is handled silently, ErrorResponse is not available, use a regular error with raw response
+                    logger.warn("Error occurred when parsing response body", e);
                 }
             }
             return Mono.error(new RestClientException("HTTP error occurred: " + response.statusCode(), response.statusCode(), rawResponse, rawResponseHeaders));
