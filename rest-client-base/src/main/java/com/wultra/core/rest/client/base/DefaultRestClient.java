@@ -15,9 +15,6 @@
  */
 package com.wultra.core.rest.client.base;
 
-import com.fasterxml.jackson.databind.Module;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.type.TypeFactory;
 import com.wultra.core.rest.client.base.util.SslUtils;
 import com.wultra.core.rest.model.base.request.ObjectRequest;
 import com.wultra.core.rest.model.base.response.ErrorResponse;
@@ -29,17 +26,17 @@ import io.netty.channel.socket.nio.NioChannelOption;
 import io.netty.handler.logging.LogLevel;
 import io.netty.handler.ssl.SslContext;
 import jdk.net.ExtendedSocketOptions;
+import lombok.extern.slf4j.Slf4j;
 import org.reactivestreams.Publisher;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.core.ParameterizedTypeReference;
+import org.springframework.core.ResolvableType;
 import org.springframework.core.io.buffer.DataBuffer;
 import org.springframework.core.io.buffer.DataBufferLimitException;
 import org.springframework.http.*;
 import org.springframework.http.client.reactive.ReactorClientHttpConnector;
 import org.springframework.http.codec.ClientCodecConfigurer;
-import org.springframework.http.codec.json.Jackson2JsonDecoder;
-import org.springframework.http.codec.json.Jackson2JsonEncoder;
+import org.springframework.http.codec.json.JacksonJsonDecoder;
+import org.springframework.http.codec.json.JacksonJsonEncoder;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.reactive.function.BodyInserters;
@@ -50,8 +47,12 @@ import reactor.netty.resources.ConnectionProvider;
 import reactor.netty.tcp.SslProvider;
 import reactor.netty.transport.ProxyProvider;
 import reactor.netty.transport.logging.AdvancedByteBufFormat;
+import tools.jackson.databind.DatabindException;
+import tools.jackson.databind.JacksonModule;
+import tools.jackson.databind.ObjectMapper;
+import tools.jackson.databind.json.JsonMapper;
+import tools.jackson.databind.type.TypeFactory;
 
-import java.io.IOException;
 import java.lang.reflect.Type;
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -65,9 +66,8 @@ import java.util.function.Consumer;
  *
  * @author Roman Strobl, roman.strobl@wultra.com
  */
+@Slf4j
 public class DefaultRestClient implements RestClient {
-
-    private static final Logger logger = LoggerFactory.getLogger(DefaultRestClient.class);
 
     /**
      * Default max connections.
@@ -77,7 +77,7 @@ public class DefaultRestClient implements RestClient {
 
     private WebClient webClient;
     private final RestClientConfiguration config;
-    private final Collection<Module> modules;
+    private final Collection<JacksonModule> modules;
 
     /**
      * Construct default REST client without any additional configuration.
@@ -98,7 +98,7 @@ public class DefaultRestClient implements RestClient {
      * @param modules jackson modules
      * @throws RestClientException Thrown in case client initialization fails.
      */
-    public DefaultRestClient(final RestClientConfiguration config, final Module... modules) throws RestClientException {
+    public DefaultRestClient(final RestClientConfiguration config, final JacksonModule... modules) throws RestClientException {
         // Use WebClient configuration from the config constructor parameter
         this.config = config;
         this.modules = modules == null ? Collections.emptyList() : Arrays.asList(modules);
@@ -172,13 +172,13 @@ public class DefaultRestClient implements RestClient {
             });
         }
 
-        final Optional<ObjectMapper> objectMapperOptional = createObjectMapper(config, modules);
+        final Optional<JsonMapper> objectMapperOptional = createObjectMapper(config, modules);
         final ExchangeStrategies exchangeStrategies = ExchangeStrategies.builder()
                 .codecs(configurer -> {
                     ClientCodecConfigurer.ClientDefaultCodecs defaultCodecs = configurer.defaultCodecs();
-                    objectMapperOptional.ifPresent(objectMapper -> {
-                        defaultCodecs.jackson2JsonEncoder(new Jackson2JsonEncoder(objectMapper, MediaType.APPLICATION_JSON));
-                        defaultCodecs.jackson2JsonDecoder(new Jackson2JsonDecoder(objectMapper, MediaType.APPLICATION_JSON));
+                    objectMapperOptional.ifPresent(mapper -> {
+                        defaultCodecs.jacksonJsonEncoder(new JacksonJsonEncoder(mapper, MediaType.APPLICATION_JSON));
+                        defaultCodecs.jacksonJsonDecoder(new JacksonJsonDecoder(mapper, MediaType.APPLICATION_JSON));
                     });
                     defaultCodecs.maxInMemorySize(config.getMaxInMemorySize());
                 })
@@ -270,21 +270,20 @@ public class DefaultRestClient implements RestClient {
         return HttpClient.create(providerBuilder.build());
     }
 
-    private static Optional<ObjectMapper> createObjectMapper(final RestClientConfiguration config, Collection<Module> modules) {
+    private static Optional<JsonMapper> createObjectMapper(final RestClientConfiguration config, Collection<JacksonModule> modules) {
         final RestClientConfiguration.JacksonConfiguration jacksonConfiguration = config.getJacksonConfiguration();
         if (jacksonConfiguration == null && modules.isEmpty()) {
             return Optional.empty();
         }
 
         logger.debug("Configuring object mapper");
-        final ObjectMapper objectMapper = new ObjectMapper();
+        JsonMapper.Builder builder = JsonMapper.builder();
+        builder.addModules(modules);
         if (jacksonConfiguration != null) {
-            jacksonConfiguration.getDeserialization().forEach(objectMapper::configure);
-            jacksonConfiguration.getSerialization().forEach(objectMapper::configure);
+            jacksonConfiguration.getDeserialization().forEach(builder::configure);
+            jacksonConfiguration.getSerialization().forEach(builder::configure);
         }
-        objectMapper.registerModules(modules);
-
-        return Optional.of(objectMapper);
+        return Optional.of(builder.build());
     }
 
     private static void validateConfiguration(final RestClientConfiguration config) throws RestClientException {
@@ -304,7 +303,7 @@ public class DefaultRestClient implements RestClient {
             return buildUri(webClient.get(), path, queryParams)
                     .headers(h -> {
                         if (headers != null) {
-                            h.addAll(headers);
+                            headers.forEach(h::addAll);
                         }
                     })
                     .exchangeToMono(rs -> handleResponse(rs, responseType))
@@ -329,7 +328,7 @@ public class DefaultRestClient implements RestClient {
             buildUri(webClient.get(), path, queryParams)
                     .headers(h -> {
                         if (headers != null) {
-                            h.addAll(headers);
+                            headers.forEach(h::addAll);
                         }
                     })
                     .accept(config.getAcceptType())
@@ -373,7 +372,7 @@ public class DefaultRestClient implements RestClient {
             WebClient.RequestBodySpec spec = buildUri(webClient.post(), path, queryParams)
                     .headers(h -> {
                         if (headers != null) {
-                            h.addAll(headers);
+                            headers.forEach(h::addAll);
                         }
                     })
                     .contentType(resolveContentType(config, headers))
@@ -408,7 +407,7 @@ public class DefaultRestClient implements RestClient {
             WebClient.RequestBodySpec spec = buildUri(webClient.post(), path, queryParams)
                     .headers(h -> {
                         if (headers != null) {
-                            h.addAll(headers);
+                            headers.forEach(h::addAll);
                         }
                     })
                     .contentType(resolveContentType(config, headers))
@@ -454,7 +453,7 @@ public class DefaultRestClient implements RestClient {
             WebClient.RequestBodySpec spec = buildUri(webClient.put(), path, queryParams)
                     .headers(h -> {
                         if (headers != null) {
-                            h.addAll(headers);
+                            headers.forEach(h::addAll);
                         }
                     })
                     .contentType(resolveContentType(config, headers))
@@ -482,7 +481,7 @@ public class DefaultRestClient implements RestClient {
             WebClient.RequestBodySpec spec = buildUri(webClient.put(), path, queryParams)
                     .headers(h -> {
                         if (headers != null) {
-                            h.addAll(headers);
+                            headers.forEach(h::addAll);
                         }
                     })
                     .contentType(resolveContentType(config, headers))
@@ -528,7 +527,7 @@ public class DefaultRestClient implements RestClient {
             return buildUri(webClient.delete(), path, queryParams)
                     .headers(h -> {
                         if (headers != null) {
-                            h.addAll(headers);
+                            headers.forEach(h::addAll);
                         }
                     })
                     .exchangeToMono(rs -> handleResponse(rs, responseType))
@@ -553,7 +552,7 @@ public class DefaultRestClient implements RestClient {
             buildUri(webClient.delete(), path, queryParams)
                     .headers(h -> {
                         if (headers != null) {
-                            h.addAll(headers);
+                            headers.forEach(h::addAll);
                         }
                     })
                     .accept(config.getAcceptType())
@@ -596,7 +595,7 @@ public class DefaultRestClient implements RestClient {
             WebClient.RequestBodySpec spec = buildUri(webClient.patch(), path, queryParams)
                     .headers(h -> {
                         if (headers != null) {
-                            h.addAll(headers);
+                            headers.forEach(h::addAll);
                         }
                     })
                     .contentType(resolveContentType(config, headers))
@@ -624,7 +623,7 @@ public class DefaultRestClient implements RestClient {
             WebClient.RequestBodySpec spec = buildUri(webClient.patch(), path, queryParams)
                     .headers(h -> {
                         if (headers != null) {
-                            h.addAll(headers);
+                            headers.forEach(h::addAll);
                         }
                     })
                     .contentType(resolveContentType(config, headers))
@@ -670,7 +669,7 @@ public class DefaultRestClient implements RestClient {
             return buildUri(webClient.head(), path, queryParams)
                     .headers(h -> {
                         if (headers != null) {
-                            h.addAll(headers);
+                            headers.forEach(h::addAll);
                         }
                     })
                     .exchangeToMono(rs -> handleResponse(rs, responseType))
@@ -696,7 +695,7 @@ public class DefaultRestClient implements RestClient {
             buildUri(webClient.head(), path, queryParams)
                     .headers(h -> {
                         if (headers != null) {
-                            h.addAll(headers);
+                            headers.forEach(h::addAll);
                         }
                     })
                     .accept(config.getAcceptType())
@@ -738,12 +737,8 @@ public class DefaultRestClient implements RestClient {
      * @return Parameterized type reference of ObjectResponse.
      */
     private <T> ParameterizedTypeReference<ObjectResponse<T>> getTypeReference(Class<T> responseType) {
-        return new ParameterizedTypeReference<>() {
-            @Override
-            public Type getType() {
-                return TypeFactory.defaultInstance().constructParametricType(ObjectResponse.class, responseType);
-            }
-        };
+        final Type type = ResolvableType.forClassWithGenerics(ObjectResponse.class, responseType).getType();
+        return ParameterizedTypeReference.forType(type);
     }
 
     /**
@@ -770,13 +765,13 @@ public class DefaultRestClient implements RestClient {
             if (clazz.isAssignableFrom(ObjectResponse.class)) {
                 try {
                     // Use an ObjectMapper to deserialize the error response
-                    ObjectMapper objectMapper = new ObjectMapper();
+                    ObjectMapper objectMapper = JsonMapper.builder().build();
                     ErrorResponse errorResponse = objectMapper.readValue(rawResponse, ErrorResponse.class);
                     if (errorResponse != null) {
                         return Mono.error(new RestClientException("HTTP error occurred: " + response.statusCode(), response.statusCode(), rawResponse, rawResponseHeaders, errorResponse));
                     }
-                } catch (IOException ex) {
-                    // Exception is handled silently, ErrorResponse is not available, use a regular error with raw response
+                } catch (DatabindException e) {
+                    logger.warn("Error occurred when parsing response body", e);
                 }
             }
             return Mono.error(new RestClientException("HTTP error occurred: " + response.statusCode(), response.statusCode(), rawResponse, rawResponseHeaders));
@@ -875,7 +870,7 @@ public class DefaultRestClient implements RestClient {
 
         private final RestClientConfiguration config;
 
-        private final Collection<Module> modules;
+        private final Collection<JacksonModule> modules;
 
         /**
          * Construct new builder with given base URL.
@@ -1096,8 +1091,8 @@ public class DefaultRestClient implements RestClient {
          * @param modules Jackson modules.
          * @return Builder.
          */
-        public Builder modules(Collection<Module> modules) {
-            modules.addAll(modules);
+        public Builder modules(Collection<JacksonModule> modules) {
+            this.modules.addAll(modules);
             return this;
         }
 

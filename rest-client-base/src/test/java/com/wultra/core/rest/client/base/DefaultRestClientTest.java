@@ -18,8 +18,6 @@ package com.wultra.core.rest.client.base;
 import ch.qos.logback.classic.Logger;
 import ch.qos.logback.classic.spi.ILoggingEvent;
 import ch.qos.logback.core.read.ListAppender;
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.wultra.core.rest.client.base.model.TestRequest;
 import com.wultra.core.rest.client.base.model.TestResponse;
 import com.wultra.core.rest.model.base.request.ObjectRequest;
@@ -46,6 +44,8 @@ import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import org.springframework.util.ResourceUtils;
 import reactor.core.publisher.Flux;
+import tools.jackson.databind.ObjectMapper;
+import tools.jackson.databind.json.JsonMapper;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -683,10 +683,10 @@ class DefaultRestClientTest {
     }
 
     @Test
-    void testPostWithDataBuffer() throws RestClientException, JsonProcessingException {
+    void testPostWithDataBuffer() throws Exception {
         String requestData = String.valueOf(System.currentTimeMillis());
         ObjectRequest<TestRequest> request = new ObjectRequest<>(new TestRequest(requestData));
-        ObjectMapper objectMapper = new ObjectMapper();
+        ObjectMapper objectMapper = JsonMapper.builder().build();
         byte[] data = objectMapper.writeValueAsBytes(request);
         DefaultDataBufferFactory factory = new DefaultDataBufferFactory();
         DefaultDataBuffer dataBuffer = factory.wrap(ByteBuffer.wrap(data));
@@ -706,8 +706,8 @@ class DefaultRestClientTest {
         MultipartBodyBuilder bodyBuilder = new MultipartBodyBuilder();
         bodyBuilder.part("request", testRequest);
 
-        HttpHeaders headers = new HttpHeaders();
-        headers.setContentType(MediaType.MULTIPART_FORM_DATA);
+        final MultiValueMap<String, String> headers = new LinkedMultiValueMap<>();
+        headers.add(HttpHeaders.CONTENT_TYPE, MediaType.MULTIPART_FORM_DATA_VALUE);
 
         final ResponseEntity<ObjectResponse<TestResponse>> responseEntity =
                 restClient.post("/multipart-request-response", bodyBuilder.build(), null, headers, new ParameterizedTypeReference<>(){});
@@ -720,8 +720,8 @@ class DefaultRestClientTest {
 
     @Test
     void testPostFormData() throws Exception {
-        final HttpHeaders headers = new HttpHeaders();
-        headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
+        final MultiValueMap<String, String> headers = new LinkedMultiValueMap<>();
+        headers.add(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_FORM_URLENCODED_VALUE);
 
         final MultiValueMap<String, String> map = new LinkedMultiValueMap<>();
         map.add("grant_type", "authorization_code");
@@ -742,8 +742,8 @@ class DefaultRestClientTest {
     void testPostOctetStream() throws Exception {
         final byte[] request = {1, 2};
 
-        final HttpHeaders headers = new HttpHeaders();
-        headers.setContentType(MediaType.APPLICATION_OCTET_STREAM);
+        final MultiValueMap<String, String> headers = new LinkedMultiValueMap<>();
+        headers.add(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_OCTET_STREAM_VALUE);
 
         final ResponseEntity<ObjectResponse<TestResponse>> responseEntity =
                 restClient.post("/octet-stream", request, null, headers, new ParameterizedTypeReference<>(){});
@@ -788,7 +788,7 @@ class DefaultRestClientTest {
 
         final ResponseEntity<ObjectResponse<TestResponse>> responseEntity =
                 restClient.post("/request-headers-response", null, new ParameterizedTypeReference<>(){});
-        assertTrue(responseEntity.getHeaders().containsKey(headerName));
+        assertTrue(responseEntity.getHeaders().containsHeader(headerName));
         assertEquals(headerVaue, responseEntity.getHeaders().getFirst(headerName));
     }
 

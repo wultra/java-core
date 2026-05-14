@@ -16,6 +16,7 @@
 package com.wultra.core.rest.model.base.response;
 
 
+import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
 import lombok.EqualsAndHashCode;
@@ -30,6 +31,7 @@ import lombok.ToString;
  */
 @ToString(callSuper = true)
 @EqualsAndHashCode(callSuper = true)
+@JsonPropertyOrder({"status", "responseObject"})
 public class ObjectResponse<T> extends Response {
 
     @Valid
