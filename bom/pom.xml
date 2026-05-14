@@ -46,6 +46,12 @@
                 <artifactId>rest-model-base</artifactId>
                 <version>${project.version}</version>
             </dependency>
+
+            <dependency>
+                <groupId>com.wultra.core</groupId>
+                <artifactId>logging-support</artifactId>
+                <version>${project.version}</version>
+            </dependency>
         </dependencies>
     </dependencyManagement>
 
