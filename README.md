@@ -430,3 +430,25 @@ Right now, these annotations are available:
 
 - `PublicApi` - Marker for interfaces intended **to be called by extension**.
 - `PublicSpi` - Marker for interfaces intended **to be implemented by extensions** and called by core.
+
+## Wultra Logging Support
+
+The `logging-support` module provides Logback utilities for structured logging in dev/test environments.
+
+### StructuredArgumentsConverter
+
+`StructuredArgumentsConverter` is a Logback `ClassicConverter` that renders `StructuredArguments.kv()` key-value pairs in plain-text log output. This is useful during development and testing when JSON output is not configured, making structured fields visible in the console.
+
+**Usage in `logback.xml`:**
+```xml
+<conversionRule conversionWord="sa"
+    converterClass="com.wultra.core.logging.logback.StructuredArgumentsConverter"/>
+<pattern>%d{HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%sa%n</pattern>
+```
+
+**Example output:**
+```
+10:35:22.123 [main] INFO  c.w.EnrollmentService - action: createIdentity, state: succeeded {processId=abc-123, identityVerificationId=def-456}
+```
+
+When no structured arguments are present, the converter returns an empty string so no trailing whitespace appears in the log line.

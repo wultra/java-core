@@ -49,6 +49,7 @@
 		<module>http-common</module>
 		<module>rest-model-base</module>
 		<module>rest-client-base</module>
+		<module>logging-support</module>
 	</modules>
 
 	<properties>
@@ -64,6 +65,7 @@
 		<!-- Dependencies -->
 		<spring-boot.version>4.0.6</spring-boot.version>
 		<shedlock.version>7.7.0</shedlock.version>
+		<logstash.version>9.0</logstash.version>
 	</properties>
 
 	<dependencyManagement>
