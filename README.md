@@ -325,8 +325,8 @@ The following properties can be configured in case the default configuration nee
 - `audit.cleanup.cron` - A cron expression for the cleanup job. (default: `0 0 * * * *`, use `-` to turn it off completely) 
 - `audit.cleanup.lockAtLeastFor` - The lock will be held at least for given duration. (default: `5s`)
 - `audit.cleanup.lockAtMostFor` - The lock will be held at most for given duration. (default: `30m`)
-- `audit.flush.delay.fixed` - fixed delay between automatic audit flushes (default: `1000`)
-- `audit.flush.delay.initial` - initial delay before automatic audit flushing starts (default: `1000`)
+- `audit.flush.delay.fixed` - fixed delay between automatic audit flushes (default: `1000ms`)
+- `audit.flush.delay.initial` - initial delay before automatic audit flushing starts (default: `1000ms`)
 
 You can configure database schema used by the auditing library using regular Spring JPA/Hibernate property in your application:
 - `spring.jpa.properties.hibernate.default_schema` - database database schema (default: none)
