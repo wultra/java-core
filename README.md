@@ -134,7 +134,6 @@ The following options are available for the builder:
 - `keepAliveInterval` - Keep-Alive retransmission interval time
 - `keepAliveCount` - Keep-Alive retransmission limit
 - `acceptInvalidSslCertificate` - whether invalid SSL certificate is accepted (default: false)
-- `handshakeTimeout` - SSL handshake timeout (default: `10000 ms`)
 - `maxInMemorySize` - maximum in memory request size (default: 1048576 bytes)
 - `httpBasicAuth` - HTTP basic authentication (default: disabled)
   - `username` - username for HTTP basic authentication
