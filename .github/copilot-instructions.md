@@ -10,12 +10,17 @@ This file captures conventions used when working with GitHub Copilot in the `jav
 
 ### Format
 
-Follows [Keep a Changelog 1.1.0](https://keepachangelog.com/en/1.1.0/):
+Strictly follows [Keep a Changelog 1.1.0](https://keepachangelog.com/en/1.1.0/):
 
 ```markdown
 # Changelog
 
-## X.Y.Z (TBA)
+All notable changes to this project will be documented in this file.
+
+The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
+and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
+
+## [Unreleased]
 ### Added
 - New feature description [(#N)](https://github.com/wultra/java-core/issues/N)
 
@@ -25,9 +30,12 @@ Follows [Keep a Changelog 1.1.0](https://keepachangelog.com/en/1.1.0/):
 ### Fixed
 - Bug fix description [(#N)](...)
 
-## 1.2.3 - 2025-03-01
+## [1.2.3] - 2025-03-01
 ### Added
 - ...
+
+[unreleased]: https://github.com/wultra/java-core/compare/1.2.3...HEAD
+[1.2.3]: https://github.com/wultra/java-core/compare/1.2.2...1.2.3
 ```
 
 **Change type subsections** (use only those that apply):
@@ -39,8 +47,10 @@ Follows [Keep a Changelog 1.1.0](https://keepachangelog.com/en/1.1.0/):
 - `Security` — security vulnerability fixes
 
 **Rules:**
-- Always add new entries under `## X.Y.Z (TBA)` (the unreleased section at the top).
-- On release, rename `## X.Y.Z (TBA)` to `## x.y.z - YYYY-MM-DD` (ISO 8601 date).
+- The header must mention both [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
+- Always add new entries under the `## [Unreleased]` section at the top.
+- On release: rename `## [Unreleased]` to `## [x.y.z] - YYYY-MM-DD` (ISO 8601 date), add a fresh empty `## [Unreleased]` above it, update the `[unreleased]` reference link, and add the new version's compare link at the bottom.
+- Versions and sections must be linkable via reference-style links at the bottom of the file (e.g. `[unreleased]`, `[1.2.3]`).
 - Each entry: `- <Description starting with verb> [(#N)](url)` — link to the issue, not the PR.
 - Use `java-core` issue URLs: `https://github.com/wultra/java-core/issues/N`.
 - Descriptions should be human-readable, not raw commit messages (e.g. "Fixed NPE when application list is empty" not "fix #811: add missing import").
