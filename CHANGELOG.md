@@ -8,6 +8,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 ## [2.2.0] - 2026-06-30
+
 ### Added
 - Add `logging-support` module with `StructuredArgumentsConverter` for rendering `kv()` structured arguments in plain-text log patterns [(#453)](https://github.com/wultra/java-core/issues/453)
 
