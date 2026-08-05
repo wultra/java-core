@@ -52,7 +52,10 @@ import java.io.FileInputStream;
 import java.io.InputStream;
 import java.nio.ByteBuffer;
 import java.time.Duration;
+import java.util.Date;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 import java.util.function.Consumer;
@@ -276,6 +279,34 @@ class DefaultRestClientTest {
         assertNotNull(responseEntity.getBody().getResponseObject());
         assertEquals("OK", responseEntity.getBody().getStatus());
         assertEquals(requestData, responseEntity.getBody().getResponseObject().getResponse());
+    }
+
+    /**
+     * Regression test for the Jackson 3 date serialization change. Jackson 3 flipped the
+     * {@code WRITE_DATES_AS_TIMESTAMPS} default to {@code false}, which turned {@link Date} values POSTed
+     * by {@link DefaultRestClient} into ISO-8601 strings instead of the historical numeric epoch value and
+     * broke clients that parse those timestamps as numbers. This asserts the default client (no explicit
+     * Jackson configuration or modules) serializes a {@link Date} as numeric epoch milliseconds by
+     * capturing the raw request body echoed back by the server.
+     */
+    @Test
+    void testPostDateSerializesAsNumericTimestamp() throws RestClientException {
+        final Date date = new Date(1785926829449L);
+        final Map<String, Object> payload = new LinkedHashMap<>();
+        payload.put("timestamp", date);
+
+        final ResponseEntity<ObjectResponse<TestResponse>> responseEntity =
+                restClient.post("/echo-json-body", payload, new ParameterizedTypeReference<>() {});
+
+        assertNotNull(responseEntity);
+        assertNotNull(responseEntity.getBody());
+        assertNotNull(responseEntity.getBody().getResponseObject());
+        final String rawBody = responseEntity.getBody().getResponseObject().getResponse();
+        assertNotNull(rawBody);
+        assertTrue(rawBody.contains("\"timestamp\":1785926829449"),
+                "Date must be serialized as numeric epoch milliseconds, was: " + rawBody);
+        assertFalse(rawBody.contains("2026-08-"),
+                "Date must not be serialized as an ISO-8601 string, was: " + rawBody);
     }
 
     @Test
