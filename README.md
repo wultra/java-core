@@ -154,7 +154,7 @@ The following options are available for the builder:
   - `trustStoreBytes` - byte data with truststore (alternative configuration way to `trustStoreLocation`)
 - `modules` - jackson modules  
 - `jacksonConfiguration` - jackson configuration for custom object mapper
-  - `serialization` - Jackson on/off features that affect the way Java objects are serialized.
+  - `serialization` - Jackson on/off features that affect the way Java objects are serialized. Note: `DefaultRestClient` enables `WRITE_DATES_AS_TIMESTAMPS` by default (dates are serialized as numeric epoch timestamps); override it here to serialize dates as ISO-8601 strings instead.
   - `deserialization` - Jackson on/off features that affect the way Java objects are deserialized, e.g. `FAIL_ON_UNKNOWN_PROPERTIES=true`
 - `filter` - custom `ExchangeFilterFunction` for applying a filter during communication
 - `defaultHttpHeaders` - custom `HttpHeaders` to be added to all requests as default HTTP headers
