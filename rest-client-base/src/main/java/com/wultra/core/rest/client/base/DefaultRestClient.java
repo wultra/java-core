@@ -50,6 +50,7 @@ import reactor.netty.transport.logging.AdvancedByteBufFormat;
 import tools.jackson.databind.DatabindException;
 import tools.jackson.databind.JacksonModule;
 import tools.jackson.databind.ObjectMapper;
+import tools.jackson.databind.cfg.DateTimeFeature;
 import tools.jackson.databind.json.JsonMapper;
 import tools.jackson.databind.type.TypeFactory;
 
@@ -272,12 +273,13 @@ public class DefaultRestClient implements RestClient {
 
     private static Optional<JsonMapper> createObjectMapper(final RestClientConfiguration config, Collection<JacksonModule> modules) {
         final RestClientConfiguration.JacksonConfiguration jacksonConfiguration = config.getJacksonConfiguration();
-        if (jacksonConfiguration == null && modules.isEmpty()) {
-            return Optional.empty();
-        }
 
         logger.debug("Configuring object mapper");
-        JsonMapper.Builder builder = JsonMapper.builder();
+        final JsonMapper.Builder builder = JsonMapper.builder();
+        // Restore the pre-Jackson-3 default of serializing dates as numeric timestamps. Jackson 3 changed
+        // the WRITE_DATES_AS_TIMESTAMPS default to false, which turned java.util.Date and java.time values
+        // into ISO-8601 strings on the wire and broke clients that parse them as numeric epoch values.
+        builder.enable(DateTimeFeature.WRITE_DATES_AS_TIMESTAMPS);
         builder.addModules(modules);
         if (jacksonConfiguration != null) {
             jacksonConfiguration.getDeserialization().forEach(builder::configure);

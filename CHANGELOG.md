@@ -7,6 +7,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Fixed
+- Restore serializing dates as numeric epoch timestamps in `DefaultRestClient`; Jackson 3 changed the `WRITE_DATES_AS_TIMESTAMPS` default to `false`, which broke clients that parse the timestamps as numbers [(#475)](https://github.com/wultra/java-core/issues/475)
+
 ## [2.2.0] - 2026-06-30
 
 ### Added
