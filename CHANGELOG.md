@@ -7,7 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [2.2.1] - 2026-08-06
+
 ### Fixed
+
 - Restore serializing dates as numeric epoch timestamps in `DefaultRestClient`; Jackson 3 changed the `WRITE_DATES_AS_TIMESTAMPS` default to `false`, which broke clients that parse the timestamps as numbers [(#475)](https://github.com/wultra/java-core/issues/475)
 
 ## [2.2.0] - 2026-06-30
@@ -18,5 +21,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Changed
 - Migrate to Spring Boot 4.0 (Spring Framework 7, Jackson 3) [(#451)](https://github.com/wultra/java-core/issues/451)
 
-[unreleased]: https://github.com/wultra/java-core/compare/2.2.0...HEAD
+[unreleased]: https://github.com/wultra/java-core/compare/2.2.1...HEAD
+[2.2.1]: https://github.com/wultra/java-core/compare/2.2.0...2.2.1
 [2.2.0]: https://github.com/wultra/java-core/compare/2.1.0...2.2.0
