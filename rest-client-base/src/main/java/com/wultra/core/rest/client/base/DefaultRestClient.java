@@ -173,14 +173,12 @@ public class DefaultRestClient implements RestClient {
             });
         }
 
-        final Optional<JsonMapper> objectMapperOptional = createObjectMapper(config, modules);
+        final JsonMapper objectMapper = createObjectMapper(config, modules);
         final ExchangeStrategies exchangeStrategies = ExchangeStrategies.builder()
                 .codecs(configurer -> {
                     ClientCodecConfigurer.ClientDefaultCodecs defaultCodecs = configurer.defaultCodecs();
-                    objectMapperOptional.ifPresent(mapper -> {
-                        defaultCodecs.jacksonJsonEncoder(new JacksonJsonEncoder(mapper, MediaType.APPLICATION_JSON));
-                        defaultCodecs.jacksonJsonDecoder(new JacksonJsonDecoder(mapper, MediaType.APPLICATION_JSON));
-                    });
+                    defaultCodecs.jacksonJsonEncoder(new JacksonJsonEncoder(objectMapper, MediaType.APPLICATION_JSON));
+                    defaultCodecs.jacksonJsonDecoder(new JacksonJsonDecoder(objectMapper, MediaType.APPLICATION_JSON));
                     defaultCodecs.maxInMemorySize(config.getMaxInMemorySize());
                 })
                 .build();
@@ -271,7 +269,7 @@ public class DefaultRestClient implements RestClient {
         return HttpClient.create(providerBuilder.build());
     }
 
-    private static Optional<JsonMapper> createObjectMapper(final RestClientConfiguration config, Collection<JacksonModule> modules) {
+    private static JsonMapper createObjectMapper(final RestClientConfiguration config, Collection<JacksonModule> modules) {
         final RestClientConfiguration.JacksonConfiguration jacksonConfiguration = config.getJacksonConfiguration();
 
         logger.debug("Configuring object mapper");
@@ -285,7 +283,7 @@ public class DefaultRestClient implements RestClient {
             jacksonConfiguration.getDeserialization().forEach(builder::configure);
             jacksonConfiguration.getSerialization().forEach(builder::configure);
         }
-        return Optional.of(builder.build());
+        return builder.build();
     }
 
     private static void validateConfiguration(final RestClientConfiguration config) throws RestClientException {
