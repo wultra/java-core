@@ -97,6 +97,11 @@ public class PublicTestRestController {
         return new ObjectResponse<>(testResponse);
     }
 
+    @PostMapping(value = "/echo-json-body", consumes = MediaType.APPLICATION_JSON_VALUE)
+    public ObjectResponse<TestResponse> testEchoJsonBody(@RequestBody String rawBody) {
+        return new ObjectResponse<>(new TestResponse(rawBody));
+    }
+
     @PostMapping("/object-response-large")
     public ObjectResponse<TestResponse> testPostWithLargeServerResponse() {
         TestResponse testResponse = new TestResponse(Arrays.toString(new byte[10 * 1024 * 1024]));
